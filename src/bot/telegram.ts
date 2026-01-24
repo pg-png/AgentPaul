@@ -141,20 +141,42 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
       { parse_mode: 'Markdown' }
     );
 
+    // Step 1: Scrape restaurant
+    let restaurantData;
+    let outputDir: string;
+
     try {
-      // Scrape restaurant data
-      const outputDir = path.join(DATA_DIR, generateSlug(restaurantName));
-      const restaurantData = await scrapeRestaurant(restaurantName, city, outputDir);
+      outputDir = path.join(DATA_DIR, generateSlug(restaurantName));
+      restaurantData = await scrapeRestaurant(restaurantName, city, outputDir);
 
       await ctx.reply(
         `✅ *Restaurant trouvé!*\n\n📍 ${restaurantData.name}\n⭐ ${restaurantData.rating}/5 (${restaurantData.reviewCount} avis)\n📸 ${restaurantData.photos.length} photos\n\nGénération du contenu...`,
         { parse_mode: 'Markdown' }
       );
+    } catch (error: any) {
+      console.error('Scrape error:', error);
+      await ctx.reply(
+        `❌ *Restaurant non trouvé*\n\nVérifie:\n• L'orthographe du nom\n• La ville\n• Que le restaurant est sur Google Maps\n\nErreur: ${error.message || 'Inconnue'}`,
+        { parse_mode: 'Markdown' }
+      );
+      return;
+    }
 
-      // Generate content
-      const content = await generateContent(restaurantData);
+    // Step 2: Generate content with Claude
+    let content;
+    try {
+      content = await generateContent(restaurantData);
+    } catch (error: any) {
+      console.error('Content generation error:', error);
+      await ctx.reply(
+        `❌ *Erreur génération contenu*\n\nLe restaurant a été trouvé mais la génération du contenu a échoué.\n\nErreur: ${error.message || 'API Claude indisponible'}`,
+        { parse_mode: 'Markdown' }
+      );
+      return;
+    }
 
-      // Build page data
+    // Step 3: Build and save page
+    try {
       const pageData: PageData = {
         name: restaurantData.name,
         slug: restaurantData.slug,
@@ -196,10 +218,10 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
         { parse_mode: 'Markdown' }
       );
 
-    } catch (error) {
-      console.error('Error creating page:', error);
+    } catch (error: any) {
+      console.error('Page build error:', error);
       await ctx.reply(
-        `❌ *Erreur*\n\nJe n'ai pas pu trouver ce restaurant. Vérifie:\n• L'orthographe du nom\n• La ville\n• Que le restaurant est sur Google Maps`,
+        `❌ *Erreur sauvegarde*\n\nLe contenu a été généré mais la sauvegarde a échoué.\n\nErreur: ${error.message || 'Inconnue'}`,
         { parse_mode: 'Markdown' }
       );
     }
