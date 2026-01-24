@@ -303,15 +303,49 @@ app.post('/webhook', async (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
+// Debug: List output directory
+app.get('/debug/files', async (req: Request, res: Response) => {
+  try {
+    const outputDir = path.join(process.cwd(), 'output');
+    const cwd = process.cwd();
+    let files: string[] = [];
+
+    try {
+      const dirs = await fs.readdir(outputDir);
+      for (const dir of dirs) {
+        const subPath = path.join(outputDir, dir);
+        const stats = await fs.stat(subPath);
+        if (stats.isDirectory()) {
+          const subFiles = await fs.readdir(subPath);
+          files.push(`${dir}/: ${subFiles.join(', ')}`);
+        } else {
+          files.push(dir);
+        }
+      }
+    } catch (e: any) {
+      files = [`Error reading output: ${e.message}`];
+    }
+
+    res.json({ cwd, outputDir, files });
+  } catch (error: any) {
+    res.json({ error: error.message });
+  }
+});
+
 // Serve page HTML
 app.get('/:slug', async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
-    const htmlPath = path.join(process.cwd(), 'output', slug, 'index.html');
+    const htmlPath = path.resolve(process.cwd(), 'output', slug, 'index.html');
+
+    console.log(`[Server] Serving page: ${slug}`);
+    console.log(`[Server] Path: ${htmlPath}`);
+
     await fs.access(htmlPath);
     res.sendFile(htmlPath);
-  } catch {
-    res.status(404).send('Page not found');
+  } catch (error: any) {
+    console.error(`[Server] Page not found: ${req.params.slug}`, error.message);
+    res.status(404).send(`Page not found. Looking for: output/${req.params.slug}/index.html`);
   }
 });
 
