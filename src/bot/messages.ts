@@ -37,15 +37,13 @@ Dans quelle ville?`,
   SEARCHING: (name: string, city: string) => `Je cherche "${name}" a ${city} sur Google Maps...`,
 
   // Restaurant found
-  FOUND_RESTAURANT: (data: RestaurantInfo, mapsUrl: string) => `J'ai trouve:
+  FOUND_RESTAURANT: (data: RestaurantInfo, mapsUrl: string) => `*${data.name}*
 
-${data.name}
-${data.address}
-${data.phone ? data.phone : ''}
+${data.address}${data.phone ? `\n${data.phone}` : ''}
 
-[Voir sur Google Maps](${mapsUrl})
+[Voir sur Maps](${mapsUrl})
 
-C'est bien ton restaurant?`,
+C'est le bon?`,
 
   NOT_FOUND: `Je n'ai pas trouve ce restaurant sur Google Maps.
 
