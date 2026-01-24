@@ -156,7 +156,7 @@ Tu peux maintenant partager ce lien!`,
 
   DEPLOY_NOT_READY: `Pour deployer, tu dois d'abord creer une page.`,
 
-  // Buttons
+  // Buttons - Creation
   BTN_YES: 'Oui, c\'est ca',
   BTN_NO: 'Non, ce n\'est pas ca',
   BTN_STYLE_ELEGANT: 'Elegant',
@@ -166,7 +166,136 @@ Tu peux maintenant partager ce lien!`,
   BTN_YES_PHOTOS: 'Oui, j\'en ai',
   BTN_NO_PHOTOS: 'Non, utilise Google',
   BTN_CONTINUE: 'Continuer',
-  BTN_ADD_MORE: 'Ajouter d\'autres'
+  BTN_ADD_MORE: 'Ajouter d\'autres',
+
+  // Buttons - Edit menu
+  BTN_VIEW: '👁️ Voir',
+  BTN_EDIT: '✏️ Modifier',
+  BTN_SHARE: '📤 Partager',
+  BTN_EDIT_PHOTO: '📷 Photo',
+  BTN_EDIT_TEXT: '✏️ Textes',
+  BTN_EDIT_MENU: '🍽️ Menu',
+  BTN_EDIT_COLORS: '🎨 Couleurs',
+  BTN_EDIT_GALLERY: '📸 Galerie',
+  BTN_EDIT_INFO: '📍 Infos',
+  BTN_CANCEL: '❌ Annuler',
+  BTN_DONE: '✅ Terminer',
+  BTN_OTHER_EDIT: '✏️ Autre modif',
+
+  // Edit menu
+  EDIT_MENU: `Que veux-tu modifier?`,
+
+  EDIT_MENU_HINT: `\n\nOu decris simplement ce que tu veux changer.`,
+
+  // Edit - Photo
+  EDIT_PHOTO_PROMPT: `📷 Envoie-moi la nouvelle photo principale.
+
+Elle sera affichee en grand sur le hero de ta page.`,
+
+  EDIT_PHOTO_SUCCESS: `Photo principale mise a jour!`,
+
+  // Edit - Text submenu
+  EDIT_TEXT_MENU: `Quel texte veux-tu modifier?`,
+
+  BTN_EDIT_TITLE: '📝 Titre principal',
+  BTN_EDIT_TAGLINE: '💬 Accroche',
+  BTN_EDIT_DESC: '📄 Description',
+  BTN_EDIT_CTA: '🔘 Bouton CTA',
+
+  EDIT_TITLE_PROMPT: (current: string) => `Titre actuel: "${current}"
+
+Envoie le nouveau titre:`,
+
+  EDIT_TAGLINE_PROMPT: (current: string) => `Accroche actuelle: "${current}"
+
+Envoie la nouvelle accroche:`,
+
+  EDIT_DESC_PROMPT: (current: string) => `Description actuelle: "${current.substring(0, 100)}..."
+
+Envoie la nouvelle description:`,
+
+  EDIT_CTA_PROMPT: (current: string) => `Texte du bouton actuel: "${current}"
+
+Envoie le nouveau texte du bouton:`,
+
+  EDIT_TEXT_SUCCESS: (field: string) => `${field} mis a jour!`,
+
+  // Edit - Menu
+  EDIT_MENU_ITEMS: (items: Array<{name: string, price: string}>) => `Menu actuel:
+${items.map((m, i) => `${i + 1}. ${m.name} - ${m.price}`).join('\n')}
+
+Que veux-tu faire?`,
+
+  BTN_ADD_ITEM: '➕ Ajouter plat',
+  BTN_REMOVE_ITEM: '➖ Supprimer plat',
+  BTN_EDIT_ITEM: '✏️ Modifier plat',
+
+  EDIT_MENU_ADD_PROMPT: `Envoie le nouveau plat au format:
+Nom du plat - Prix
+
+Exemple: Pad Thai aux crevettes - 18$`,
+
+  EDIT_MENU_REMOVE_PROMPT: (items: Array<{name: string}>) => `Quel plat supprimer?
+${items.map((m, i) => `${i + 1}. ${m.name}`).join('\n')}
+
+Envoie le numero ou le nom du plat.`,
+
+  EDIT_MENU_SUCCESS: (action: string) => `Menu ${action}!`,
+
+  // Edit - Colors
+  EDIT_COLORS_MENU: `Choisis un theme de couleurs:`,
+
+  BTN_COLOR_RED: '🔴 Rouge classique',
+  BTN_COLOR_BLUE: '🔵 Bleu moderne',
+  BTN_COLOR_GREEN: '🟢 Vert nature',
+  BTN_COLOR_GOLD: '🟡 Or premium',
+  BTN_COLOR_CUSTOM: '🎨 Personnalise',
+
+  EDIT_COLOR_CUSTOM_PROMPT: `Envoie ta couleur en format hex.
+
+Exemple: #C41E3A (rouge) ou #1E3A8A (bleu)`,
+
+  EDIT_COLOR_SUCCESS: `Couleurs mises a jour!`,
+
+  // Edit - Gallery
+  EDIT_GALLERY_PROMPT: (count: number) => `Tu as ${count} photo${count > 1 ? 's' : ''} dans la galerie.
+
+Envoie de nouvelles photos pour les ajouter.`,
+
+  EDIT_GALLERY_SUCCESS: (added: number) => `${added} photo${added > 1 ? 's' : ''} ajoutee${added > 1 ? 's' : ''} a la galerie!`,
+
+  // Edit - Info
+  EDIT_INFO_MENU: `Quelle info modifier?`,
+
+  BTN_EDIT_HOURS: '🕐 Horaires',
+  BTN_EDIT_PHONE: '📞 Telephone',
+  BTN_EDIT_ADDRESS: '📍 Adresse',
+
+  EDIT_HOURS_PROMPT: (current: string[]) => `Horaires actuels:
+${current.join('\n')}
+
+Envoie les nouveaux horaires (une ligne par jour):`,
+
+  EDIT_PHONE_PROMPT: (current: string) => `Telephone actuel: ${current}
+
+Envoie le nouveau numero:`,
+
+  EDIT_ADDRESS_PROMPT: (current: string) => `Adresse actuelle: ${current}
+
+Envoie la nouvelle adresse:`,
+
+  EDIT_INFO_SUCCESS: (field: string) => `${field} mis a jour!`,
+
+  // Share
+  SHARE_MESSAGE: (url: string, name: string) => `Partage ta page!
+
+${url}
+
+📋 Lien copie-colle:
+${url}
+
+📱 Pour WhatsApp/SMS:
+Decouvre ${name}: ${url}`
 };
 
 export type StyleChoice = 'elegant' | 'casual' | 'trendy' | 'familial';

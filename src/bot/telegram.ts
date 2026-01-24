@@ -20,10 +20,18 @@ import {
   isConfirmation,
   isDenial,
   extractStyle,
-  ConversationState
+  ConversationState,
+  isEditingState
 } from './conversation';
 import { interpretMessage, getHelpMessage } from './interpreter';
 import { handleAction, updatePhoto, getPageSummary } from './handler';
+import {
+  showEditMenu,
+  handleEditCallback,
+  handleEditTextInput,
+  handleEditPhotoUpload,
+  isEditState
+} from './editFlow';
 import { loadPageData, buildPage, savePageData, PageData } from '../generator';
 import { scrapeRestaurant } from '../scraper';
 import { generateContent } from '../generator';
@@ -150,6 +158,19 @@ export function createBot(token: string): Telegraf {
     await ctx.reply(MESSAGES.ASK_NAME);
   });
 
+  // /edit command - show edit menu
+  bot.command('edit', async (ctx) => {
+    const userId = ctx.from!.id;
+    const session = getSession(userId);
+
+    if (!session.pageData || !session.pageSlug) {
+      await ctx.reply(MESSAGES.ERROR_NO_PAGE);
+      return;
+    }
+
+    await showEditMenu(ctx, userId);
+  });
+
   // /deploy command - deploy current page to Vercel
   bot.command('deploy', async (ctx) => {
     const session = getSession(ctx.from!.id);
@@ -189,6 +210,14 @@ export function createBot(token: string): Telegraf {
 
     await ctx.answerCbQuery();
 
+    // Handle edit callbacks first
+    if (data.startsWith('edit_') || data.startsWith('color_') ||
+        data.startsWith('menu_') || data.startsWith('info_') ||
+        data === 'show_edit_menu') {
+      await handleEditCallback(ctx, userId, data);
+      return;
+    }
+
     // Handle confirmation buttons
     if (data === 'confirm_yes') {
       if (session.state === 'CONFIRMING' && session.scrapedData) {
@@ -222,6 +251,12 @@ export function createBot(token: string): Telegraf {
     const session = getSession(userId);
     const text = ctx.message.text.trim();
 
+    // Handle edit states first
+    if (isEditState(session.state)) {
+      const handled = await handleEditTextInput(ctx, userId, text);
+      if (handled) return;
+    }
+
     // Handle based on current state
     switch (session.state) {
       case 'IDLE':
@@ -245,6 +280,11 @@ export function createBot(token: string): Telegraf {
         await handleModification(ctx, userId, text);
         break;
 
+      case 'EDIT_MENU':
+        // User typed text in edit menu - treat as natural language modification
+        await handleModification(ctx, userId, text);
+        break;
+
       case 'GENERATING':
         await ctx.reply('Je suis en train de generer ta page, patiente un instant...');
         break;
@@ -259,9 +299,23 @@ export function createBot(token: string): Telegraf {
     const userId = ctx.from!.id;
     const session = getSession(userId);
 
+    // Get photo URL first
+    const photoMessage = ctx.message as any;
+    const photo = photoMessage.photo[photoMessage.photo.length - 1];
+    const file = await ctx.telegram.getFile(photo.file_id);
+    const photoUrl = `https://api.telegram.org/file/bot${botToken}/${file.file_path}`;
+
+    // Handle edit states (EDIT_PHOTO, EDIT_GALLERY)
+    if (session.state === 'EDIT_PHOTO' || session.state === 'EDIT_GALLERY') {
+      await ctx.reply('Photo recue! Mise a jour...');
+      await handleEditPhotoUpload(ctx, userId, photoUrl);
+      return;
+    }
+
     if (session.state !== 'AWAITING_PHOTO' && session.state !== 'READY') {
       await ctx.reply(
-        'Belle photo! Pour l\'ajouter a ta page, dis-moi:\n• "Change la photo principale"\n• "Ajoute cette photo a la galerie"'
+        'Belle photo! Pour l\'ajouter a ta page:\n\n' +
+        'Tape /edit puis choisis "Photo" ou "Galerie"'
       );
       return;
     }

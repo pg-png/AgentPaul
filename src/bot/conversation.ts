@@ -14,9 +14,27 @@ export type ConversationState =
   | 'CONFIRMING'        // Confirming Google result
   | 'CHOOSING_STYLE'    // Choosing vibe
   | 'GENERATING'        // Generating page
-  | 'READY'             // Page ready, edit mode
+  | 'READY'             // Page ready, can edit
   | 'AWAITING_PHOTO'    // Waiting for photos
-  | 'MODIFYING';        // Processing modification
+  | 'MODIFYING'         // Processing modification
+  // Edit sub-states
+  | 'EDIT_MENU'         // Showing edit menu
+  | 'EDIT_PHOTO'        // Waiting for hero photo
+  | 'EDIT_TEXT_MENU'    // Showing text edit menu
+  | 'EDIT_TITLE'        // Waiting for new title
+  | 'EDIT_TAGLINE'      // Waiting for new tagline
+  | 'EDIT_DESC'         // Waiting for new description
+  | 'EDIT_CTA'          // Waiting for new CTA text
+  | 'EDIT_MENU_ITEMS'   // Showing menu items editor
+  | 'EDIT_MENU_ADD'     // Adding menu item
+  | 'EDIT_MENU_REMOVE'  // Removing menu item
+  | 'EDIT_COLORS'       // Choosing colors
+  | 'EDIT_COLOR_CUSTOM' // Waiting for custom color
+  | 'EDIT_GALLERY'      // Adding gallery photos
+  | 'EDIT_INFO_MENU'    // Showing info edit menu
+  | 'EDIT_HOURS'        // Editing hours
+  | 'EDIT_PHONE'        // Editing phone
+  | 'EDIT_ADDRESS';     // Editing address
 
 // Style options
 export type StyleChoice = 'elegant' | 'casual' | 'trendy' | 'familial';
@@ -150,9 +168,34 @@ export function getStateName(state: ConversationState): string {
     GENERATING: 'Generation',
     READY: 'Pret',
     AWAITING_PHOTO: 'Attend photo',
-    MODIFYING: 'Modification'
+    MODIFYING: 'Modification',
+    // Edit states
+    EDIT_MENU: 'Menu edition',
+    EDIT_PHOTO: 'Edition photo',
+    EDIT_TEXT_MENU: 'Menu textes',
+    EDIT_TITLE: 'Edition titre',
+    EDIT_TAGLINE: 'Edition tagline',
+    EDIT_DESC: 'Edition description',
+    EDIT_CTA: 'Edition CTA',
+    EDIT_MENU_ITEMS: 'Edition menu',
+    EDIT_MENU_ADD: 'Ajout plat',
+    EDIT_MENU_REMOVE: 'Suppression plat',
+    EDIT_COLORS: 'Edition couleurs',
+    EDIT_COLOR_CUSTOM: 'Couleur custom',
+    EDIT_GALLERY: 'Edition galerie',
+    EDIT_INFO_MENU: 'Menu infos',
+    EDIT_HOURS: 'Edition horaires',
+    EDIT_PHONE: 'Edition telephone',
+    EDIT_ADDRESS: 'Edition adresse'
   };
   return names[state];
+}
+
+/**
+ * Check if we're in any edit state
+ */
+export function isEditingState(state: ConversationState): boolean {
+  return state.startsWith('EDIT_');
 }
 
 /**
