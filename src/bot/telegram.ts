@@ -27,6 +27,7 @@ import { handleAction, updatePhoto, getPageSummary } from './handler';
 import { loadPageData, buildPage, savePageData, PageData } from '../generator';
 import { scrapeRestaurant } from '../scraper';
 import { generateContent } from '../generator';
+import { deployToVercel } from '../deploy';
 
 // Paths
 const DATA_DIR = process.env.DATA_DIR || './output';
@@ -144,18 +145,35 @@ export function createBot(token: string): Telegraf {
     await ctx.reply(MESSAGES.ASK_NAME);
   });
 
-  // /deploy command
+  // /deploy command - deploy current page to Vercel
   bot.command('deploy', async (ctx) => {
     const session = getSession(ctx.from!.id);
 
-    if (!session.pageSlug) {
+    if (!session.pageSlug || !session.outputDir) {
       await ctx.reply(MESSAGES.DEPLOY_NOT_READY);
       return;
     }
 
-    await ctx.reply(
-      `Pour deployer ta page sur Vercel, configure VERCEL_TOKEN dans les variables d'environnement.\n\n(Fonctionnalite en developpement)`
-    );
+    if (!process.env.VERCEL_TOKEN) {
+      await ctx.reply(
+        'Pour deployer sur Vercel, configure VERCEL_TOKEN dans Railway.\n\n' +
+        '1. Va sur vercel.com/account/tokens\n' +
+        '2. Cree un token\n' +
+        '3. Ajoute-le dans Railway → Variables'
+      );
+      return;
+    }
+
+    await ctx.reply('Deploiement sur Vercel...');
+    await ctx.sendChatAction('typing');
+
+    const deployResult = await deployToVercel(session.outputDir, `resto-${session.pageSlug}`);
+
+    if (deployResult.success && deployResult.url) {
+      await ctx.reply(MESSAGES.DEPLOY_SUCCESS(deployResult.url));
+    } else {
+      await ctx.reply(`Echec du deploiement: ${deployResult.error || 'Erreur inconnue'}`);
+    }
   });
 
   // Handle callback queries (button clicks)
@@ -464,11 +482,37 @@ async function handleGeneration(ctx: Context, userId: number, style: StyleChoice
       pageData: pageData,
       outputDir: outputDir
     });
+
+    // Deploy to Vercel if token is configured
+    let finalUrl: string;
+    let deployedToVercel = false;
+
+    if (process.env.VERCEL_TOKEN) {
+      await ctx.reply('Deploiement sur Vercel...');
+      const deployResult = await deployToVercel(outputDir, `resto-${folderSlug}`);
+
+      if (deployResult.success && deployResult.url) {
+        finalUrl = deployResult.url;
+        deployedToVercel = true;
+        console.log(`[Bot] Deployed to Vercel: ${finalUrl}`);
+      } else {
+        console.error('[Bot] Vercel deploy failed:', deployResult.error);
+        finalUrl = getPreviewUrl(folderSlug);
+      }
+    } else {
+      finalUrl = getPreviewUrl(folderSlug);
+    }
+
     transitionTo(userId, 'READY');
 
     // Send success message
-    const previewUrl = getPreviewUrl(folderSlug);
-    await ctx.reply(MESSAGES.PAGE_READY(pageData, previewUrl));
+    await ctx.reply(MESSAGES.PAGE_READY(pageData, finalUrl));
+
+    if (!deployedToVercel) {
+      await ctx.reply(
+        '⚠️ Note: Cette preview est temporaire.\nPour une URL permanente, configure VERCEL_TOKEN.'
+      );
+    }
 
   } catch (error: any) {
     console.error('Generation error:', error);
