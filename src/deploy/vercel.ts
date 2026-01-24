@@ -12,6 +12,7 @@ const VERCEL_API = 'https://api.vercel.com';
 interface DeploymentFile {
   file: string;
   data: string;
+  encoding: 'base64';
 }
 
 interface DeploymentResult {
@@ -59,7 +60,8 @@ export async function deployToVercel(
         name: projectName,
         files: files.map(f => ({
           file: f.file,
-          data: f.data
+          data: f.data,
+          encoding: f.encoding
         })),
         projectSettings: {
           framework: null
@@ -129,7 +131,8 @@ async function collectFiles(
 
       files.push({
         file: relativePath.replace(/\\/g, '/'),
-        data: base64
+        data: base64,
+        encoding: 'base64'
       });
     }
   }
