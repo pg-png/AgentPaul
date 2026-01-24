@@ -151,9 +151,15 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
       outputDir = path.join(DATA_DIR, folderSlug);
       restaurantData = await scrapeRestaurant(restaurantName, city, outputDir);
 
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurantData.name + ' ' + restaurantData.address)}`;
+
       await ctx.reply(
-        `✅ *Restaurant trouvé!*\n\n📍 ${restaurantData.name}\n⭐ ${restaurantData.rating}/5 (${restaurantData.reviewCount} avis)\n📸 ${restaurantData.photos.length} photos\n\nGénération du contenu...`,
-        { parse_mode: 'Markdown' }
+        `✅ *Restaurant trouvé!*\n\n` +
+        `📍 ${restaurantData.name}\n` +
+        `📌 ${restaurantData.address}\n\n` +
+        `🗺️ [Voir sur Google Maps](${mapsUrl})\n\n` +
+        `Génération du contenu...`,
+        { parse_mode: 'Markdown', link_preview_options: { is_disabled: true } }
       );
     } catch (error: any) {
       console.error('Scrape error:', error);
@@ -181,15 +187,14 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
     try {
       const pageData: PageData = {
         name: restaurantData.name,
-        slug: folderSlug,  // Use consistent slug from input name
+        slug: folderSlug,
         tagline: content.tagline,
         description: content.description,
         address: restaurantData.address,
         phone: restaurantData.phone,
         hours: restaurantData.hours,
-        rating: restaurantData.rating,
-        reviewCount: restaurantData.reviewCount,
         website: restaurantData.website,
+        mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurantData.name + ' ' + restaurantData.address)}`,
         heroTitle: content.heroTitle,
         heroImage: restaurantData.photos[0]?.url || '',
         ctaText: content.ctaText,

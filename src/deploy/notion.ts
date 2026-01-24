@@ -60,21 +60,21 @@ export async function upsertPageRecord(
           url: options.url || null
         },
         'Rating': {
-          number: pageData.rating
+          number: pageData.rating ?? null
         },
         'Reviews': {
-          number: pageData.reviewCount
+          number: pageData.reviewCount ?? null
         },
         'Tagline': {
           rich_text: [{ text: { content: pageData.tagline || '' } }]
         },
         'Telegram User': {
-          number: options.telegramUserId || null
+          number: options.telegramUserId ?? null
         },
         'Last Updated': {
           date: { start: new Date().toISOString() }
         }
-      }
+      } as any
     });
 
     console.log(`[Notion] Updated: ${existing.id}`);
@@ -107,10 +107,10 @@ export async function upsertPageRecord(
           url: options.url || null
         },
         'Rating': {
-          number: pageData.rating
+          number: pageData.rating ?? null
         },
         'Reviews': {
-          number: pageData.reviewCount
+          number: pageData.reviewCount ?? null
         },
         'Address': {
           rich_text: [{ text: { content: pageData.address || '' } }]
@@ -125,7 +125,7 @@ export async function upsertPageRecord(
           rich_text: [{ text: { content: pageData.primaryColor || '' } }]
         },
         'Telegram User': {
-          number: options.telegramUserId || null
+          number: options.telegramUserId ?? null
         },
         'Created': {
           date: { start: new Date().toISOString() }
@@ -133,7 +133,7 @@ export async function upsertPageRecord(
         'Last Updated': {
           date: { start: new Date().toISOString() }
         }
-      }
+      } as any
     });
 
     console.log(`[Notion] Created: ${response.id}`);

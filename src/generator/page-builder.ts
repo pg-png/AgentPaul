@@ -16,9 +16,10 @@ export interface PageData {
   address: string;
   phone: string;
   hours: string[];
-  rating: number;
-  reviewCount: number;
+  rating?: number;
+  reviewCount?: number;
   website?: string | null;
+  mapsUrl?: string;  // Google Maps link for directions
 
   // Generated content
   heroTitle: string;

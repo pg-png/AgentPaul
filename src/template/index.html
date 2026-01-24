@@ -527,7 +527,11 @@
   <section class="info-bar">
     <div class="info-item">
       <span class="icon">📍</span>
+      {{#if mapsUrl}}
+      <a href="{{mapsUrl}}" target="_blank" rel="noopener">{{address}}</a>
+      {{else}}
       <span>{{address}}</span>
+      {{/if}}
     </div>
     <div class="info-item">
       <span class="icon">📞</span>
@@ -616,7 +620,7 @@
   <footer class="footer">
     <div class="footer-info">
       <p><strong>{{name}}</strong></p>
-      <p>{{address}}</p>
+      {{#if mapsUrl}}<p><a href="{{mapsUrl}}" target="_blank" rel="noopener">{{address}}</a></p>{{else}}<p>{{address}}</p>{{/if}}
       <p>{{formatPhone phone}}</p>
     </div>
     <p class="footer-brand">
