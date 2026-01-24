@@ -4,7 +4,7 @@
   "description": "Restaurant Landing Page Generator - Scrape, Generate, Deploy, Edit via Telegram",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r src/template dist/",
     "start": "node dist/index.js",
     "dev": "MODE=both ts-node src/index.ts",
     "bot": "MODE=bot ts-node src/index.ts",

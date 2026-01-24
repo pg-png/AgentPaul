@@ -72,11 +72,34 @@ Handlebars.registerHelper('ifEquals', function(this: any, arg1: any, arg2: any, 
 });
 
 /**
+ * Find template file - checks multiple locations
+ */
+async function findTemplatePath(): Promise<string> {
+  const possiblePaths = [
+    path.join(process.cwd(), 'src/template/index.html'),  // Development
+    path.join(process.cwd(), 'dist/template/index.html'), // If copied to dist
+    path.join(__dirname, '../template/index.html'),       // Relative to compiled
+    path.join(__dirname, '../../src/template/index.html') // Compiled -> src
+  ];
+
+  for (const p of possiblePaths) {
+    try {
+      await fs.access(p);
+      return p;
+    } catch {
+      continue;
+    }
+  }
+
+  throw new Error(`Template not found. Tried: ${possiblePaths.join(', ')}`);
+}
+
+/**
  * Build HTML page from template and data
  */
 export async function buildPage(data: PageData): Promise<string> {
-  // Read template
-  const templatePath = path.join(__dirname, '../template/index.html');
+  // Find and read template
+  const templatePath = await findTemplatePath();
   const templateContent = await fs.readFile(templatePath, 'utf-8');
 
   // Compile and render
