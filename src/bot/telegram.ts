@@ -213,8 +213,25 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
       const state = getUserState(ctx.from!.id);
       state.currentPageSlug = restaurantData.slug;
 
+      // Build preview URL
+      const baseUrl = process.env.RAILWAY_PUBLIC_DOMAIN
+        ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+        : `http://localhost:${process.env.PORT || 3000}`;
+      const previewUrl = `${baseUrl}/${pageData.slug}`;
+
       await ctx.reply(
-        `🎉 *Page créée avec succès!*\n\n${getPageSummary(pageData)}\n\n💡 Tu peux maintenant modifier ta page en m'envoyant des instructions en français.\n\nExemples:\n• "Change le titre pour Bienvenue chez nous"\n• "Ajoute la pizza margherita à 18$"\n• "Met du rouge comme couleur principale"`,
+        `🎉 *Ta page est prete!*\n\n` +
+        `🔗 *Voir ta page:* ${previewUrl}\n\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+        `📌 *Titre:* ${pageData.heroTitle}\n` +
+        `✨ *Accroche:* ${pageData.tagline}\n\n` +
+        `🍽️ *Menu:*\n${pageData.menuHighlights.map(m => `• ${m.name} - ${m.price}`).join('\n')}\n\n` +
+        `🎨 *Couleurs:* ${pageData.primaryColor}\n\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+        `Tu peux modifier ta page en m'envoyant un message:\n` +
+        `• "Change le titre pour..."\n` +
+        `• "Ajoute [plat] a [prix]"\n` +
+        `• "Met du bleu comme couleur"`,
         { parse_mode: 'Markdown' }
       );
 
@@ -268,12 +285,19 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
     const pageData = await getCurrentPageData(state);
 
     if (!pageData) {
-      await ctx.reply('Aucune page sélectionnée. Utilise /select ou /new.');
+      await ctx.reply('Tu n\'as pas encore de page. Envoie-moi le nom de ton restaurant pour commencer!');
       return;
     }
 
+    const baseUrl = process.env.RAILWAY_PUBLIC_DOMAIN
+      ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+      : `http://localhost:${process.env.PORT || 3000}`;
+    const previewUrl = `${baseUrl}/${pageData.slug}`;
+
     await ctx.reply(
-      `🔗 *Prévisualisation:*\n\nTa page sera disponible sur:\n\`https://tonsite.vercel.app/${pageData.slug}\`\n\n⚠️ Note: Tu dois d'abord déployer avec /deploy`,
+      `🔗 *Voici ta page:*\n\n${previewUrl}\n\n` +
+      `Tu peux partager ce lien!\n\n` +
+      `_Pour une URL personnalisee (ex: maesri.com), utilise /deploy_`,
       { parse_mode: 'Markdown' }
     );
   });
