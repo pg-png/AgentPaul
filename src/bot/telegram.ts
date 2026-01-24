@@ -144,9 +144,11 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
     // Step 1: Scrape restaurant
     let restaurantData;
     let outputDir: string;
+    let folderSlug: string;
 
     try {
-      outputDir = path.join(DATA_DIR, generateSlug(restaurantName));
+      folderSlug = generateSlug(restaurantName);
+      outputDir = path.join(DATA_DIR, folderSlug);
       restaurantData = await scrapeRestaurant(restaurantName, city, outputDir);
 
       await ctx.reply(
@@ -179,7 +181,7 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
     try {
       const pageData: PageData = {
         name: restaurantData.name,
-        slug: restaurantData.slug,
+        slug: folderSlug,  // Use consistent slug from input name
         tagline: content.tagline,
         description: content.description,
         address: restaurantData.address,
@@ -209,15 +211,15 @@ Je suis ton assistant pour créer et gérer des landing pages de restaurant.
       const html = await buildPage(pageData);
       await fs.writeFile(path.join(outputDir, 'index.html'), html);
 
-      // Update user state
+      // Update user state - use folder slug for consistency
       const state = getUserState(ctx.from!.id);
-      state.currentPageSlug = restaurantData.slug;
+      state.currentPageSlug = folderSlug;
 
-      // Build preview URL
+      // Build preview URL using folder slug
       const baseUrl = process.env.RAILWAY_PUBLIC_DOMAIN
         ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
         : `http://localhost:${process.env.PORT || 3000}`;
-      const previewUrl = `${baseUrl}/${pageData.slug}`;
+      const previewUrl = `${baseUrl}/${folderSlug}/`;
 
       await ctx.reply(
         `🎉 *Ta page est prete!*\n\n` +
