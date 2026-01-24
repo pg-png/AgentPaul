@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{name}} - {{tagline}}</title>
+  <meta name="description" content="{{description}}">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{name}}">
+  <meta property="og:description" content="{{tagline}}">
+  <meta property="og:image" content="{{heroImage}}">
+  <meta property="og:type" content="restaurant">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+
+  <style>
+    :root {
+      --primary: {{primaryColor}};
+      --accent: {{accentColor}};
+      --text: #1a1a1a;
+      --text-light: #666666;
+      --text-muted: #999999;
+      --bg: #fafafa;
+      --bg-white: #ffffff;
+      --border: #e5e5e5;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      line-height: 1.2;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ============================================
+       HERO SECTION
+       ============================================ */
+    .hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--bg-white);
+      overflow: hidden;
+    }
+
+    .hero-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.2) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        rgba(0, 0, 0, 0.7) 100%
+      );
+      z-index: -1;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      padding: 2rem;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+      letter-spacing: -0.02em;
+    }
+
+    .hero .tagline {
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      opacity: 0.95;
+      margin-bottom: 1.5rem;
+      font-weight: 400;
+    }
+
+    .hero .rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.1rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      margin-bottom: 2rem;
+    }
+
+    .hero .stars {
+      color: #ffc107;
+      letter-spacing: 2px;
+    }
+
+    .hero-cta {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--bg-white);
+      background: var(--accent);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ============================================
+       NOTICE (Optional)
+       ============================================ */
+    .notice {
+      padding: 1rem 2rem;
+      background: linear-gradient(90deg, #fff3cd, #ffeeba);
+      color: #856404;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    /* ============================================
+       INFO BAR
+       ============================================ */
+    .info-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem 1rem;
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .info-item .icon {
+      font-size: 1.2rem;
+    }
+
+    .info-item a {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .info-item a:hover {
+      text-decoration: underline;
+    }
+
+    /* ============================================
+       SECTION COMMON
+       ============================================ */
+    .section {
+      padding: 5rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      margin-bottom: 3rem;
+      color: var(--text);
+    }
+
+    /* ============================================
+       GALLERY
+       ============================================ */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      padding: 3rem 1.5rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      aspect-ratio: 4/3;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    /* ============================================
+       MENU HIGHLIGHTS
+       ============================================ */
+    .menu {
+      background: var(--bg-white);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 1.5rem;
+      background: var(--bg);
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--shadow);
+    }
+
+    .menu-item-info {
+      flex: 1;
+    }
+
+    .menu-item .name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+
+    .menu-item .description {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .menu-item .price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-left: 1rem;
+    }
+
+    /* ============================================
+       EVENT (Optional)
+       ============================================ */
+    .event {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: var(--bg-white);
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .event h2 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-bottom: 1rem;
+    }
+
+    .event p {
+      max-width: 600px;
+      margin: 0 auto;
+      opacity: 0.95;
+      font-size: 1.1rem;
+    }
+
+    .event .date {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      font-weight: 600;
+    }
+
+    /* ============================================
+       REVIEWS
+       ============================================ */
+    .reviews {
+      background: var(--bg);
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .review-card {
+      padding: 2rem;
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 20px var(--shadow);
+    }
+
+    .review-card .stars {
+      color: #ffc107;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+    }
+
+    .review-card .text {
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .review-card .author {
+      font-weight: 600;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       CTA SECTION
+       ============================================ */
+    .cta-section {
+      text-align: center;
+      padding: 5rem 2rem;
+      background: var(--bg-white);
+    }
+
+    .cta-section h2 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .cta-section p {
+      color: var(--text-light);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 1.25rem 3rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--bg-white);
+      background: var(--accent);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ============================================
+       FOOTER
+       ============================================ */
+    .footer {
+      padding: 3rem 2rem;
+      text-align: center;
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .footer-info {
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-info p {
+      margin: 0.5rem 0;
+      opacity: 0.8;
+    }
+
+    .footer-brand {
+      font-size: 0.85rem;
+      opacity: 0.6;
+    }
+
+    .footer-brand a {
+      color: var(--accent);
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      .hero {
+        min-height: 70vh;
+      }
+
+      .info-bar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem 1rem;
+      }
+
+      .section {
+        padding: 3rem 1rem;
+      }
+
+      .menu-item {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .menu-item .price {
+        margin-left: 0;
+      }
+
+      .gallery {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 2rem 1rem;
+      }
+    }
+
+    /* ============================================
+       ANIMATIONS
+       ============================================ */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-content {
+      animation: fadeInUp 0.8s ease-out;
+    }
+  </style>
+</head>
+<body>
+  {{#if notice}}
+  <div class="notice">
+    ⚠️ {{notice}}
+  </div>
+  {{/if}}
+
+  <!-- HERO -->
+  <section class="hero">
+    <img class="hero-image" src="{{heroImage}}" alt="{{name}}" loading="eager">
+    <div class="hero-content">
+      <h1>{{heroTitle}}</h1>
+      <p class="tagline">{{tagline}}</p>
+      <div class="rating">
+        <span class="stars">{{stars rating}}</span>
+        <span>{{rating}}/5 · {{reviewCount}} avis</span>
+      </div>
+      <a href="tel:{{cleanPhone phone}}" class="hero-cta">{{ctaText}}</a>
+    </div>
+  </section>
+
+  <!-- INFO BAR -->
+  <section class="info-bar">
+    <div class="info-item">
+      <span class="icon">📍</span>
+      <span>{{address}}</span>
+    </div>
+    <div class="info-item">
+      <span class="icon">📞</span>
+      <a href="tel:{{cleanPhone phone}}">{{formatPhone phone}}</a>
+    </div>
+    {{#if hours.length}}
+    <div class="info-item">
+      <span class="icon">🕐</span>
+      <span>{{hours.[0]}}</span>
+    </div>
+    {{/if}}
+    {{#if website}}
+    <div class="info-item">
+      <span class="icon">🌐</span>
+      <a href="{{website}}" target="_blank" rel="noopener">Site web</a>
+    </div>
+    {{/if}}
+  </section>
+
+  <!-- GALLERY -->
+  {{#if photos.length}}
+  <section class="gallery">
+    {{#each photos}}
+    <div class="gallery-item">
+      <img src="{{this.url}}" alt="{{this.alt}}" loading="lazy">
+    </div>
+    {{/each}}
+  </section>
+  {{/if}}
+
+  <!-- MENU HIGHLIGHTS -->
+  {{#if menuHighlights.length}}
+  <section class="menu section">
+    <h2 class="section-title">Nos Specialites</h2>
+    <div class="menu-grid">
+      {{#each menuHighlights}}
+      <div class="menu-item">
+        <div class="menu-item-info">
+          <div class="name">{{this.name}}</div>
+          {{#if this.description}}
+          <div class="description">{{this.description}}</div>
+          {{/if}}
+        </div>
+        <div class="price">{{this.price}}</div>
+      </div>
+      {{/each}}
+    </div>
+  </section>
+  {{/if}}
+
+  <!-- EVENT (Optional) -->
+  {{#if event}}
+  <section class="event">
+    <h2>🎉 {{event.title}}</h2>
+    <p>{{event.description}}</p>
+    {{#if event.date}}
+    <span class="date">📅 {{event.date}}</span>
+    {{/if}}
+  </section>
+  {{/if}}
+
+  <!-- REVIEWS -->
+  {{#if reviews.length}}
+  <section class="reviews section">
+    <h2 class="section-title">Ce qu'on dit de nous</h2>
+    <div class="reviews-grid">
+      {{#each reviews}}
+      <div class="review-card">
+        <div class="stars">{{stars this.rating}}</div>
+        <p class="text">"{{truncate this.text 200}}"</p>
+        <p class="author">— {{this.author}}</p>
+      </div>
+      {{/each}}
+    </div>
+  </section>
+  {{/if}}
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Envie de nous visiter?</h2>
+    <p>Reservez votre table ou commandez maintenant</p>
+    <a href="tel:{{cleanPhone phone}}" class="cta-button">{{ctaText}}</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-info">
+      <p><strong>{{name}}</strong></p>
+      <p>{{address}}</p>
+      <p>{{formatPhone phone}}</p>
+    </div>
+    <p class="footer-brand">
+      Propulse par <a href="https://wwithai.com" target="_blank" rel="noopener">WwithAI</a>
+    </p>
+  </footer>
+</body>
+</html>
