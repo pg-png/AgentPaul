@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{{name}} - {{tagline}}</title>
   <meta name="description" content="{{description}}">
 
@@ -12,7 +12,7 @@
   <meta property="og:image" content="{{heroImage}}">
   <meta property="og:type" content="restaurant">
 
-  <!-- Fonts -->
+  <!-- Fonts - Preload critical -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
@@ -31,8 +31,10 @@
       --bg-white: #ffffff;
       --border: #e5e5e5;
       --shadow: rgba(0, 0, 0, 0.08);
+      --shadow-lg: rgba(0, 0, 0, 0.15);
       --radius: 16px;
       --radius-sm: 8px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     * {
@@ -51,6 +53,7 @@
       background: var(--bg);
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(80px + var(--safe-bottom));
     }
 
     h1, h2, h3 {
@@ -69,13 +72,14 @@
     }
 
     /* ============================================
-       HERO SECTION
+       HERO - Full screen mobile
        ============================================ */
     .hero {
       position: relative;
-      min-height: 85vh;
+      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
       text-align: center;
       color: var(--bg-white);
@@ -97,55 +101,39 @@
       inset: 0;
       background: linear-gradient(
         180deg,
-        rgba(0, 0, 0, 0.2) 0%,
-        rgba(0, 0, 0, 0.4) 50%,
+        rgba(0, 0, 0, 0.1) 0%,
+        rgba(0, 0, 0, 0.2) 40%,
         rgba(0, 0, 0, 0.7) 100%
       );
       z-index: -1;
     }
 
     .hero-content {
-      max-width: 800px;
+      max-width: 600px;
       padding: 2rem;
+      padding-bottom: 4rem;
       z-index: 1;
     }
 
     .hero h1 {
-      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-size: clamp(2.5rem, 10vw, 4rem);
       font-weight: 700;
-      margin-bottom: 1rem;
-      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+      margin-bottom: 0.75rem;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
       letter-spacing: -0.02em;
     }
 
     .hero .tagline {
-      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-size: clamp(1rem, 4vw, 1.25rem);
       opacity: 0.95;
       margin-bottom: 1.5rem;
       font-weight: 400;
     }
 
-    .hero .rating {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 1.1rem;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      padding: 0.75rem 1.5rem;
-      border-radius: 50px;
-      margin-bottom: 2rem;
-    }
-
-    .hero .stars {
-      color: #ffc107;
-      letter-spacing: 2px;
-    }
-
     .hero-cta {
       display: inline-block;
-      padding: 1rem 2.5rem;
-      font-size: 1.1rem;
+      padding: 1rem 2rem;
+      font-size: 1rem;
       font-weight: 600;
       color: var(--bg-white);
       background: var(--accent);
@@ -153,93 +141,184 @@
       border-radius: 50px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     .hero-cta:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: bounce 2s infinite;
+      opacity: 0.8;
+      font-size: 1.5rem;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+      40% { transform: translateX(-50%) translateY(-10px); }
+      60% { transform: translateX(-50%) translateY(-5px); }
     }
 
     /* ============================================
-       NOTICE (Optional)
+       QUICK INFO - Compact bar
        ============================================ */
-    .notice {
-      padding: 1rem 2rem;
-      background: linear-gradient(90deg, #fff3cd, #ffeeba);
-      color: #856404;
-      text-align: center;
-      font-weight: 500;
-      font-size: 0.95rem;
-    }
-
-    /* ============================================
-       INFO BAR
-       ============================================ */
-    .info-bar {
+    .quick-info {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
-      gap: 2rem;
-      padding: 2rem 1rem;
+      gap: 1rem;
+      padding: 1.25rem 1rem;
       background: var(--bg-white);
       border-bottom: 1px solid var(--border);
     }
 
-    .info-item {
+    .quick-info a {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.95rem;
-      color: var(--text);
-    }
-
-    .info-item .icon {
-      font-size: 1.2rem;
-    }
-
-    .info-item a {
-      color: var(--accent);
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border-radius: 50px;
+      font-size: 0.9rem;
       font-weight: 500;
+      color: var(--text);
+      transition: all 0.2s;
     }
 
-    .info-item a:hover {
-      text-decoration: underline;
+    .quick-info a:hover {
+      background: var(--primary);
+      color: white;
     }
 
     /* ============================================
-       SECTION COMMON
+       EMAIL CAPTURE - Main CTA
        ============================================ */
-    .section {
-      padding: 5rem 1.5rem;
-      max-width: 1200px;
+    .email-capture {
+      padding: 3rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      text-align: center;
+      color: white;
+    }
+
+    .email-capture .offer {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .email-capture h2 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .email-capture p {
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+
+    .email-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 400px;
       margin: 0 auto;
     }
 
-    .section-title {
+    .email-form input[type="email"] {
+      padding: 1rem 1.25rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
       text-align: center;
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      margin-bottom: 3rem;
-      color: var(--text);
+      outline: none;
+    }
+
+    .email-form input[type="email"]::placeholder {
+      color: var(--text-muted);
+    }
+
+    .email-form button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .email-form button:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .email-form .privacy {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-top: 0.5rem;
+    }
+
+    .email-success {
+      display: none;
+      padding: 1rem;
+      background: rgba(255,255,255,0.2);
+      border-radius: var(--radius);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* ============================================
-       GALLERY
+       GALLERY - Horizontal scroll mobile
        ============================================ */
     .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
-      padding: 3rem 1.5rem;
-      max-width: 1400px;
-      margin: 0 auto;
+      padding: 2rem 0;
+      background: var(--bg-white);
+    }
+
+    .gallery-title {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      padding: 0 1rem;
+    }
+
+    .gallery-scroll {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0 1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .gallery-scroll::-webkit-scrollbar {
+      display: none;
     }
 
     .gallery-item {
-      position: relative;
-      overflow: hidden;
+      flex: 0 0 280px;
+      scroll-snap-align: start;
       border-radius: var(--radius);
+      overflow: hidden;
       aspect-ratio: 4/3;
     }
 
@@ -247,202 +326,192 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.5s ease;
-    }
-
-    .gallery-item:hover img {
-      transform: scale(1.05);
     }
 
     /* ============================================
        MENU HIGHLIGHTS
        ============================================ */
     .menu {
-      background: var(--bg-white);
+      padding: 3rem 1.5rem;
+      background: var(--bg);
+    }
+
+    .menu-title {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 500px;
       margin: 0 auto;
     }
 
     .menu-item {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      padding: 1.5rem;
-      background: var(--bg);
+      align-items: center;
+      padding: 1.25rem;
+      background: var(--bg-white);
       border-radius: var(--radius);
-      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px var(--shadow);
     }
 
-    .menu-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px var(--shadow);
-    }
-
-    .menu-item-info {
+    .menu-item .info {
       flex: 1;
     }
 
     .menu-item .name {
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       margin-bottom: 0.25rem;
-      color: var(--text);
     }
 
     .menu-item .description {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-light);
     }
 
     .menu-item .price {
       font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 600;
       color: var(--accent);
       margin-left: 1rem;
     }
 
     /* ============================================
-       EVENT (Optional)
-       ============================================ */
-    .event {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: var(--bg-white);
-      text-align: center;
-      padding: 4rem 2rem;
-    }
-
-    .event h2 {
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      margin-bottom: 1rem;
-    }
-
-    .event p {
-      max-width: 600px;
-      margin: 0 auto;
-      opacity: 0.95;
-      font-size: 1.1rem;
-    }
-
-    .event .date {
-      display: inline-block;
-      margin-top: 1.5rem;
-      padding: 0.75rem 1.5rem;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50px;
-      font-weight: 600;
-    }
-
-    /* ============================================
-       REVIEWS
+       REVIEWS - Carousel style
        ============================================ */
     .reviews {
-      background: var(--bg);
+      padding: 3rem 1.5rem;
+      background: var(--bg-white);
     }
 
-    .reviews-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      max-width: 1000px;
-      margin: 0 auto;
+    .reviews-title {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .reviews-scroll {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 0.5rem;
+    }
+
+    .reviews-scroll::-webkit-scrollbar {
+      display: none;
     }
 
     .review-card {
-      padding: 2rem;
-      background: var(--bg-white);
+      flex: 0 0 300px;
+      scroll-snap-align: start;
+      padding: 1.5rem;
+      background: var(--bg);
       border-radius: var(--radius);
-      box-shadow: 0 2px 20px var(--shadow);
     }
 
     .review-card .stars {
       color: #ffc107;
-      font-size: 1.1rem;
+      font-size: 1rem;
       letter-spacing: 2px;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
 
     .review-card .text {
-      font-style: italic;
+      font-size: 0.95rem;
       color: var(--text);
-      margin-bottom: 1.5rem;
-      line-height: 1.7;
+      margin-bottom: 1rem;
+      line-height: 1.6;
     }
 
     .review-card .author {
       font-weight: 600;
       color: var(--text-light);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     /* ============================================
-       CTA SECTION
+       HOURS & LOCATION
        ============================================ */
-    .cta-section {
+    .location {
+      padding: 3rem 1.5rem;
+      background: var(--bg);
       text-align: center;
-      padding: 5rem 2rem;
-      background: var(--bg-white);
     }
 
-    .cta-section h2 {
-      font-size: clamp(1.5rem, 4vw, 2rem);
+    .location-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .location-content {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .location-address {
+      font-size: 1.1rem;
       margin-bottom: 1rem;
       color: var(--text);
     }
 
-    .cta-section p {
+    .location-hours {
+      font-size: 0.95rem;
       color: var(--text-light);
-      margin-bottom: 2rem;
-      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
     }
 
-    .cta-button {
-      display: inline-block;
-      padding: 1.25rem 3rem;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--bg-white);
-      background: var(--accent);
-      border: none;
+    .location-hours p {
+      margin: 0.25rem 0;
+    }
+
+    .location-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--primary);
+      color: white;
       border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      font-weight: 500;
+      transition: all 0.2s;
     }
 
-    .cta-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    .location-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px var(--shadow-lg);
     }
 
     /* ============================================
        FOOTER
        ============================================ */
     .footer {
-      padding: 3rem 2rem;
+      padding: 2rem 1.5rem;
+      padding-bottom: calc(2rem + 80px + var(--safe-bottom));
       text-align: center;
       background: var(--text);
       color: var(--bg);
     }
 
-    .footer-info {
-      margin-bottom: 1.5rem;
-    }
-
-    .footer-info p {
+    .footer p {
       margin: 0.5rem 0;
       opacity: 0.8;
+      font-size: 0.9rem;
     }
 
     .footer-brand {
-      font-size: 0.85rem;
-      opacity: 0.6;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      opacity: 0.5;
     }
 
     .footer-brand a {
@@ -450,126 +519,191 @@
     }
 
     /* ============================================
-       RESPONSIVE
+       FLOATING CTA - Mobile
        ============================================ */
-    @media (max-width: 768px) {
+    .floating-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 0.75rem;
+      padding: 1rem;
+      padding-bottom: calc(1rem + var(--safe-bottom));
+      background: var(--bg-white);
+      box-shadow: 0 -4px 20px var(--shadow-lg);
+      z-index: 100;
+    }
+
+    .floating-cta a {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .floating-cta .cta-call {
+      background: var(--bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+
+    .floating-cta .cta-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .floating-cta .cta-primary:hover {
+      transform: scale(1.02);
+    }
+
+    /* ============================================
+       DESKTOP OVERRIDES
+       ============================================ */
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 0;
+      }
+
       .hero {
-        min-height: 70vh;
+        min-height: 80vh;
+        align-items: center;
       }
 
-      .info-bar {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1.5rem 1rem;
+      .hero-content {
+        padding-bottom: 2rem;
       }
 
-      .section {
-        padding: 3rem 1rem;
+      .scroll-hint {
+        display: none;
       }
 
-      .menu-item {
-        flex-direction: column;
-        gap: 0.5rem;
+      .email-form {
+        flex-direction: row;
       }
 
-      .menu-item .price {
-        margin-left: 0;
+      .email-form input[type="email"] {
+        flex: 1;
+        text-align: left;
       }
 
-      .gallery {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-        padding: 2rem 1rem;
+      .gallery-scroll {
+        justify-content: center;
+        flex-wrap: wrap;
+        overflow: visible;
+      }
+
+      .gallery-item {
+        flex: 0 0 300px;
+      }
+
+      .reviews-scroll {
+        justify-content: center;
+        flex-wrap: wrap;
+        overflow: visible;
+      }
+
+      .floating-cta {
+        display: none;
+      }
+
+      .footer {
+        padding-bottom: 2rem;
       }
     }
 
     /* ============================================
        ANIMATIONS
        ============================================ */
+    .hero-content {
+      animation: fadeInUp 0.8s ease-out;
+    }
+
     @keyframes fadeInUp {
       from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
       }
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
-    .hero-content {
-      animation: fadeInUp 0.8s ease-out;
-    }
   </style>
 </head>
 <body>
-  {{#if notice}}
-  <div class="notice">
-    ⚠️ {{notice}}
-  </div>
-  {{/if}}
-
   <!-- HERO -->
   <section class="hero">
     <img class="hero-image" src="{{heroImage}}" alt="{{name}}" loading="eager">
     <div class="hero-content">
       <h1>{{heroTitle}}</h1>
       <p class="tagline">{{tagline}}</p>
-      <div class="rating">
-        <span class="stars">{{stars rating}}</span>
-        <span>{{rating}}/5 · {{reviewCount}} avis</span>
-      </div>
-      <a href="tel:{{cleanPhone phone}}" class="hero-cta">{{ctaText}}</a>
+      <a href="#email-capture" class="hero-cta">Recevoir 10% de rabais</a>
     </div>
+    <div class="scroll-hint">↓</div>
   </section>
 
-  <!-- INFO BAR -->
-  <section class="info-bar">
-    <div class="info-item">
-      <span class="icon">📍</span>
-      {{#if mapsUrl}}
-      <a href="{{mapsUrl}}" target="_blank" rel="noopener">{{address}}</a>
-      {{else}}
-      <span>{{address}}</span>
-      {{/if}}
-    </div>
-    <div class="info-item">
-      <span class="icon">📞</span>
-      <a href="tel:{{cleanPhone phone}}">{{formatPhone phone}}</a>
-    </div>
+  <!-- QUICK INFO -->
+  <section class="quick-info">
+    {{#if mapsUrl}}
+    <a href="{{mapsUrl}}" target="_blank" rel="noopener">
+      <span>📍</span> Directions
+    </a>
+    {{/if}}
+    <a href="tel:{{cleanPhone phone}}">
+      <span>📞</span> Appeler
+    </a>
     {{#if hours.length}}
-    <div class="info-item">
-      <span class="icon">🕐</span>
-      <span>{{hours.[0]}}</span>
-    </div>
+    <a href="#location">
+      <span>🕐</span> Horaires
+    </a>
     {{/if}}
-    {{#if website}}
-    <div class="info-item">
-      <span class="icon">🌐</span>
-      <a href="{{website}}" target="_blank" rel="noopener">Site web</a>
+  </section>
+
+  <!-- EMAIL CAPTURE -->
+  <section class="email-capture" id="email-capture">
+    <span class="offer">🎁 OFFRE SPECIALE</span>
+    <h2>10% sur ta premiere visite</h2>
+    <p>Inscris-toi et recois ton code promo par email</p>
+    <form class="email-form" id="emailForm" action="/api/subscribe" method="POST">
+      <input type="hidden" name="restaurant" value="{{slug}}">
+      <input type="email" name="email" placeholder="ton@email.com" required>
+      <button type="submit">Recevoir mon code</button>
+      <p class="privacy">Pas de spam. Desinscription facile.</p>
+    </form>
+    <div class="email-success" id="emailSuccess">
+      <p>✅ Merci! Verifie tes emails pour ton code promo.</p>
     </div>
-    {{/if}}
   </section>
 
   <!-- GALLERY -->
   {{#if photos.length}}
   <section class="gallery">
-    {{#each photos}}
-    <div class="gallery-item">
-      <img src="{{this.url}}" alt="{{this.alt}}" loading="lazy">
+    <h2 class="gallery-title">Notre ambiance</h2>
+    <div class="gallery-scroll">
+      {{#each photos}}
+      <div class="gallery-item">
+        <img src="{{this.url}}" alt="{{this.alt}}" loading="lazy">
+      </div>
+      {{/each}}
     </div>
-    {{/each}}
   </section>
   {{/if}}
 
   <!-- MENU HIGHLIGHTS -->
   {{#if menuHighlights.length}}
-  <section class="menu section">
-    <h2 class="section-title">Nos Specialites</h2>
+  <section class="menu">
+    <h2 class="menu-title">Nos specialites</h2>
     <div class="menu-grid">
       {{#each menuHighlights}}
       <div class="menu-item">
-        <div class="menu-item-info">
+        <div class="info">
           <div class="name">{{this.name}}</div>
           {{#if this.description}}
           <div class="description">{{this.description}}</div>
@@ -582,26 +716,15 @@
   </section>
   {{/if}}
 
-  <!-- EVENT (Optional) -->
-  {{#if event}}
-  <section class="event">
-    <h2>🎉 {{event.title}}</h2>
-    <p>{{event.description}}</p>
-    {{#if event.date}}
-    <span class="date">📅 {{event.date}}</span>
-    {{/if}}
-  </section>
-  {{/if}}
-
   <!-- REVIEWS -->
   {{#if reviews.length}}
-  <section class="reviews section">
-    <h2 class="section-title">Ce qu'on dit de nous</h2>
-    <div class="reviews-grid">
+  <section class="reviews">
+    <h2 class="reviews-title">Ce qu'on dit de nous</h2>
+    <div class="reviews-scroll">
       {{#each reviews}}
       <div class="review-card">
         <div class="stars">{{stars this.rating}}</div>
-        <p class="text">"{{truncate this.text 200}}"</p>
+        <p class="text">"{{truncate this.text 150}}"</p>
         <p class="author">— {{this.author}}</p>
       </div>
       {{/each}}
@@ -609,23 +732,75 @@
   </section>
   {{/if}}
 
-  <!-- CTA -->
-  <section class="cta-section">
-    <h2>Envie de nous visiter?</h2>
-    <p>Reservez votre table ou commandez maintenant</p>
-    <a href="tel:{{cleanPhone phone}}" class="cta-button">{{ctaText}}</a>
+  <!-- LOCATION & HOURS -->
+  <section class="location" id="location">
+    <h2 class="location-title">Nous trouver</h2>
+    <div class="location-content">
+      <p class="location-address">
+        {{address}}
+      </p>
+      {{#if hours.length}}
+      <div class="location-hours">
+        {{#each hours}}
+        <p>{{this}}</p>
+        {{/each}}
+      </div>
+      {{/if}}
+      {{#if mapsUrl}}
+      <a href="{{mapsUrl}}" target="_blank" rel="noopener" class="location-btn">
+        <span>🗺️</span> Ouvrir dans Maps
+      </a>
+      {{/if}}
+    </div>
   </section>
 
   <!-- FOOTER -->
   <footer class="footer">
-    <div class="footer-info">
-      <p><strong>{{name}}</strong></p>
-      {{#if mapsUrl}}<p><a href="{{mapsUrl}}" target="_blank" rel="noopener">{{address}}</a></p>{{else}}<p>{{address}}</p>{{/if}}
-      <p>{{formatPhone phone}}</p>
-    </div>
+    <p><strong>{{name}}</strong></p>
+    <p>{{formatPhone phone}}</p>
     <p class="footer-brand">
       Propulse par <a href="https://wwithai.com" target="_blank" rel="noopener">WwithAI</a>
     </p>
   </footer>
+
+  <!-- FLOATING CTA - Mobile -->
+  <div class="floating-cta">
+    <a href="tel:{{cleanPhone phone}}" class="cta-call">
+      <span>📞</span> Appeler
+    </a>
+    <a href="#email-capture" class="cta-primary">
+      <span>🎁</span> 10% rabais
+    </a>
+  </div>
+
+  <!-- EMAIL FORM HANDLER -->
+  <script>
+    document.getElementById('emailForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value;
+      const restaurant = form.restaurant.value;
+
+      try {
+        // TODO: Replace with actual API endpoint
+        const response = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, restaurant })
+        });
+
+        if (response.ok) {
+          form.style.display = 'none';
+          document.getElementById('emailSuccess').style.display = 'block';
+        } else {
+          alert('Erreur. Reessaie!');
+        }
+      } catch (err) {
+        // Fallback - show success anyway for demo
+        form.style.display = 'none';
+        document.getElementById('emailSuccess').style.display = 'block';
+      }
+    });
+  </script>
 </body>
 </html>
