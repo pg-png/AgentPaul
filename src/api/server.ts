@@ -6,7 +6,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs/promises';
-import { createBot } from '../bot';
+import { getBotInstance } from '../bot';
 import { scrapeRestaurant } from '../scraper';
 import { generateContent, buildPage, savePageData, loadPageData, PageData } from '../generator';
 import { deployToVercel, upsertPageRecord, getPublishedPages } from '../deploy';
@@ -291,9 +291,15 @@ app.get('/api/published', async (req: Request, res: Response) => {
 /**
  * Telegram webhook handler
  */
-app.post('/webhook', (req: Request, res: Response) => {
-  // Telegram webhook handling is done by the bot itself
-  // This is just a placeholder for the route
+app.post('/webhook', async (req: Request, res: Response) => {
+  const bot = getBotInstance();
+  if (bot) {
+    try {
+      await bot.handleUpdate(req.body);
+    } catch (error) {
+      console.error('Webhook error:', error);
+    }
+  }
   res.sendStatus(200);
 });
 

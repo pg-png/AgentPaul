@@ -469,6 +469,16 @@ function generateSlug(name: string): string {
     .replace(/^-|-$/g, '');
 }
 
+// Global bot instance for webhook handling
+let botInstance: Telegraf | null = null;
+
+/**
+ * Get the bot instance for webhook handling
+ */
+export function getBotInstance(): Telegraf | null {
+  return botInstance;
+}
+
 /**
  * Start the bot
  */
@@ -480,22 +490,17 @@ export async function startBot(): Promise<void> {
   }
 
   const bot = createBot(token);
+  botInstance = bot;
 
-  // Use webhook in production, polling in development
+  // Use webhook in production (handled by Express), polling in development
   if (process.env.RAILWAY_PUBLIC_DOMAIN) {
     const domain = process.env.RAILWAY_PUBLIC_DOMAIN;
     await bot.telegram.setWebhook(`https://${domain}/webhook`);
     console.log(`[Bot] Webhook set: https://${domain}/webhook`);
-
-    // Start webhook server
-    await bot.launch({
-      webhook: {
-        domain,
-        port: Number(process.env.PORT) || 3000
-      }
-    });
+    console.log('[Bot] Webhook mode - requests handled by Express server');
+    // Don't call bot.launch() - Express will handle the webhook
   } else {
-    // Polling mode
+    // Polling mode for local development
     await bot.launch();
     console.log('[Bot] Started in polling mode');
   }
