@@ -31,6 +31,7 @@ export interface UserSession {
   pageData?: PageData;
   pageSlug?: string;
   outputDir?: string;
+  vercelUrl?: string;  // Production URL on Vercel
 
   // Photo upload tracking
   photos?: string[];

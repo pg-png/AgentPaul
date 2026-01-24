@@ -121,8 +121,13 @@ export function createBot(token: string): Telegraf {
       return;
     }
 
-    const url = getPreviewUrl(session.pageSlug);
+    // Use Vercel URL if available, otherwise Railway
+    const url = session.vercelUrl || getPreviewUrl(session.pageSlug);
     await ctx.reply(`Voici ta page:\n\n${url}`);
+
+    if (!session.vercelUrl) {
+      await ctx.reply('⚠️ URL temporaire. Utilise /deploy pour une URL permanente.');
+    }
   });
 
   // /status command
@@ -476,16 +481,9 @@ async function handleGeneration(ctx: Context, userId: number, style: StyleChoice
     const html = await buildPage(pageData);
     await fs.writeFile(path.join(outputDir, 'index.html'), html);
 
-    // Update session
-    updateSession(userId, {
-      pageSlug: folderSlug,
-      pageData: pageData,
-      outputDir: outputDir
-    });
-
     // Deploy to Vercel if token is configured
     let finalUrl: string;
-    let deployedToVercel = false;
+    let vercelUrl: string | undefined;
 
     if (process.env.VERCEL_TOKEN) {
       await ctx.reply('Deploiement sur Vercel...');
@@ -493,7 +491,7 @@ async function handleGeneration(ctx: Context, userId: number, style: StyleChoice
 
       if (deployResult.success && deployResult.url) {
         finalUrl = deployResult.url;
-        deployedToVercel = true;
+        vercelUrl = deployResult.url;
         console.log(`[Bot] Deployed to Vercel: ${finalUrl}`);
       } else {
         console.error('[Bot] Vercel deploy failed:', deployResult.error);
@@ -503,12 +501,20 @@ async function handleGeneration(ctx: Context, userId: number, style: StyleChoice
       finalUrl = getPreviewUrl(folderSlug);
     }
 
+    // Update session with Vercel URL
+    updateSession(userId, {
+      pageSlug: folderSlug,
+      pageData: pageData,
+      outputDir: outputDir,
+      vercelUrl: vercelUrl
+    });
+
     transitionTo(userId, 'READY');
 
     // Send success message
     await ctx.reply(MESSAGES.PAGE_READY(pageData, finalUrl));
 
-    if (!deployedToVercel) {
+    if (!vercelUrl) {
       await ctx.reply(
         '⚠️ Note: Cette preview est temporaire.\nPour une URL permanente, configure VERCEL_TOKEN.'
       );

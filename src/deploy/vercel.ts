@@ -77,16 +77,21 @@ export async function deployToVercel(
     const { id, url, readyState } = response.data;
 
     console.log(`[Vercel] Deployment created: ${id}`);
-    console.log(`[Vercel] URL: https://${url}`);
+    console.log(`[Vercel] Initial URL: https://${url}`);
 
     // Wait for deployment to be ready
     if (readyState !== 'READY') {
       await waitForDeployment(id, token);
     }
 
+    // Get the production alias URL (cleaner URL without hash)
+    const productionUrl = await getProductionUrl(id, token, projectName);
+
+    console.log(`[Vercel] Production URL: ${productionUrl}`);
+
     return {
       success: true,
-      url: `https://${url}`,
+      url: productionUrl,
       deploymentId: id
     };
 
@@ -130,6 +135,50 @@ async function collectFiles(
   }
 
   return files;
+}
+
+/**
+ * Get the production URL (clean alias without hash)
+ */
+async function getProductionUrl(
+  deploymentId: string,
+  token: string,
+  projectName: string
+): Promise<string> {
+  try {
+    // Get deployment details to find the alias
+    const response = await axios.get(
+      `${VERCEL_API}/v13/deployments/${deploymentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const { alias } = response.data;
+
+    // Find the cleanest alias (project name without hash)
+    if (alias && alias.length > 0) {
+      // Prefer the shortest alias (usually the production one)
+      const cleanAlias = alias
+        .filter((a: string) => a.includes(projectName))
+        .sort((a: string, b: string) => a.length - b.length)[0];
+
+      if (cleanAlias) {
+        return `https://${cleanAlias}`;
+      }
+
+      // Fallback to first alias
+      return `https://${alias[0]}`;
+    }
+
+    // Fallback to deployment URL
+    return `https://${response.data.url}`;
+  } catch (error) {
+    console.error('[Vercel] Failed to get production URL:', error);
+    return `https://${projectName}.vercel.app`;
+  }
 }
 
 /**
