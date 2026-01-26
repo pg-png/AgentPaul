@@ -6,6 +6,7 @@
 import { scrapeGoogleMaps, GoogleMapsData } from './google-maps';
 import { scrapeReviews, Review } from './google-reviews';
 import { downloadAndProcessPhotos, ProcessedPhoto } from './photo-downloader';
+import { analyzeAndRankPhotos, logAnalysisSummary, RankedPhotos } from './photo-analyzer';
 
 export interface RestaurantData {
   // Basic info
@@ -59,44 +60,82 @@ export async function scrapeRestaurant(
   const startTime = Date.now();
 
   // 1. Get basic data from Google Maps
-  console.log('[Step 1/3] Fetching Google Maps data...');
+  console.log('[Step 1/4] Fetching Google Maps data...');
   let mapsData: GoogleMapsData;
 
   try {
     mapsData = await scrapeGoogleMaps(name, city);
-    console.log(`[Step 1/3] Found: ${mapsData.name}`);
+    console.log(`[Step 1/4] Found: ${mapsData.name}`);
     console.log(`          Rating: ${mapsData.rating}/5 (${mapsData.reviewCount} reviews)`);
     console.log(`          Photos: ${mapsData.photos.length} found`);
   } catch (error) {
-    console.error('[Step 1/3] Google Maps scrape failed:', error);
+    console.error('[Step 1/4] Google Maps scrape failed:', error);
     throw new Error(`Failed to find restaurant: ${name}, ${city}`);
   }
 
-  // 2. Get reviews (in parallel with photo download)
-  console.log('\n[Step 2/3] Fetching reviews...');
+  // 2. Get reviews
+  console.log('\n[Step 2/4] Fetching reviews...');
   let reviews: Review[] = [];
 
   try {
     reviews = await scrapeReviews(name, city, 8);
-    console.log(`[Step 2/3] Found ${reviews.length} quality reviews`);
+    console.log(`[Step 2/4] Found ${reviews.length} quality reviews`);
   } catch (error) {
-    console.warn('[Step 2/3] Reviews scrape failed, continuing without reviews');
+    console.warn('[Step 2/4] Reviews scrape failed, continuing without reviews');
   }
 
-  // 3. Download and process photos
-  console.log('\n[Step 3/3] Processing photos...');
+  // 3. Analyze photos with Claude Vision
+  console.log('\n[Step 3/4] Analyzing photos with AI...');
+  let rankedPhotos: RankedPhotos | null = null;
+
+  if (mapsData.photos.length > 0) {
+    try {
+      rankedPhotos = await analyzeAndRankPhotos(mapsData.photos, 8);
+      logAnalysisSummary(rankedPhotos);
+      console.log(`[Step 3/4] Analyzed ${rankedPhotos.totalAnalyzed} photos`);
+    } catch (error) {
+      console.warn('[Step 3/4] Photo analysis failed, will use default order');
+    }
+  }
+
+  // 4. Download and process the best photos
+  console.log('\n[Step 4/4] Downloading selected photos...');
   let photos: ProcessedPhoto[] = [];
 
   if (mapsData.photos.length > 0) {
     try {
+      // Use ranked order if available, otherwise original order
+      let orderedUrls: string[];
+      if (rankedPhotos && rankedPhotos.hero) {
+        // Hero first, then gallery photos
+        orderedUrls = [
+          rankedPhotos.hero.url,
+          ...rankedPhotos.gallery.map(p => p.url)
+        ];
+      } else {
+        orderedUrls = mapsData.photos;
+      }
+
       photos = await downloadAndProcessPhotos(
-        mapsData.photos,
+        orderedUrls,
         `${outputDir}/images`,
         6
       );
-      console.log(`[Step 3/3] Processed ${photos.length} photos`);
+
+      // Add analysis metadata to photos if available
+      if (rankedPhotos) {
+        photos = photos.map((photo, index) => {
+          const analysis = index === 0 ? rankedPhotos!.hero : rankedPhotos!.gallery[index - 1];
+          return {
+            ...photo,
+            alt: analysis?.description || `Photo ${index + 1}`
+          };
+        });
+      }
+
+      console.log(`[Step 4/4] Downloaded ${photos.length} photos (AI-ranked)`);
     } catch (error) {
-      console.warn('[Step 3/3] Photo processing failed, continuing without photos');
+      console.warn('[Step 4/4] Photo processing failed, continuing without photos');
     }
   }
 
@@ -128,3 +167,4 @@ export async function scrapeRestaurant(
 
 // Re-export types
 export { GoogleMapsData, Review, ProcessedPhoto };
+export { PhotoAnalysis, RankedPhotos, analyzeAndRankPhotos } from './photo-analyzer';
