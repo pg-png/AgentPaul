@@ -5,6 +5,17 @@
 
 import { PageData } from '../generator';
 
+/**
+ * Escape HTML special characters for Telegram HTML parse mode
+ */
+function escapeHtml(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export interface RestaurantInfo {
   name: string;
   address: string;
@@ -36,12 +47,12 @@ Dans quelle ville?`,
 
   SEARCHING: (name: string, city: string) => `Je cherche "${name}" a ${city} sur Google Maps...`,
 
-  // Restaurant found
-  FOUND_RESTAURANT: (data: RestaurantInfo, mapsUrl: string) => `*${data.name}*
+  // Restaurant found (using HTML to avoid Markdown issues)
+  FOUND_RESTAURANT: (data: RestaurantInfo, mapsUrl: string) => `<b>${escapeHtml(data.name)}</b>
 
-${data.address}${data.phone ? `\n${data.phone}` : ''}
+${escapeHtml(data.address)}${data.phone ? `\n${escapeHtml(data.phone)}` : ''}
 
-[Voir sur Maps](${mapsUrl})
+<a href="${mapsUrl}">Voir sur Maps</a>
 
 C'est le bon?`,
 
@@ -65,26 +76,12 @@ Essaie encore avec le nom exact.`,
   // Page ready
   PAGE_READY: (data: PageData, url: string) => `Ta page est prete!
 
-Voir ta page: ${url}
-
-━━━━━━━━━━━━━━━━━━━━━━
+${url}
 
 Titre: ${data.heroTitle}
 Accroche: ${data.tagline}
 
-Menu:
-${data.menuHighlights.slice(0, 3).map(m => `• ${m.name} - ${m.price}`).join('\n')}
-
-Couleurs: ${data.primaryColor}
-
-━━━━━━━━━━━━━━━━━━━━━━
-
-Tu peux modifier n'importe quoi:
-• "Change le titre pour..."
-• "Ajoute [plat] a [prix]"
-• "Met du bleu comme couleur"
-
-Ou tape /preview pour voir la page.`,
+Tu peux modifier ce que tu veux.`,
 
   // Errors
   ERROR_GENERIC: `Oups, quelque chose s'est mal passe. Reessaie!`,

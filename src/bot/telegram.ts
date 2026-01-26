@@ -407,7 +407,7 @@ async function handleCityInput(ctx: Context, userId: number, text: string): Prom
     );
 
     await ctx.reply(message, {
-      parse_mode: 'Markdown',
+      parse_mode: 'HTML',
       link_preview_options: { is_disabled: true },
       ...Markup.inlineKeyboard([
         [Markup.button.callback(MESSAGES.BTN_YES, 'confirm_yes')],
@@ -565,8 +565,22 @@ async function handleGeneration(ctx: Context, userId: number, style: StyleChoice
 
     transitionTo(userId, 'READY');
 
-    // Send success message
-    await ctx.reply(MESSAGES.PAGE_READY(pageData, finalUrl));
+    // Send success message with edit buttons
+    await ctx.reply(MESSAGES.PAGE_READY(pageData, finalUrl), {
+      link_preview_options: { is_disabled: true },
+      ...Markup.inlineKeyboard([
+        [Markup.button.url('👁️ Voir la page', finalUrl)],
+        [
+          Markup.button.callback('📷 Photo', 'edit_photo'),
+          Markup.button.callback('✏️ Textes', 'edit_text')
+        ],
+        [
+          Markup.button.callback('🍽️ Menu', 'edit_menu'),
+          Markup.button.callback('🎨 Couleurs', 'edit_colors')
+        ],
+        [Markup.button.callback('✅ Terminer', 'edit_done')]
+      ])
+    });
 
     if (!vercelUrl) {
       await ctx.reply(

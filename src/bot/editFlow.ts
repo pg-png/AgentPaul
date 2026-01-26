@@ -76,8 +76,11 @@ export async function handleEditCallback(
 ): Promise<boolean> {
   const session = getSession(userId);
 
+  console.log(`[EditFlow] Action: ${action}, State: ${session.state}, HasPageData: ${!!session.pageData}, HasOutputDir: ${!!session.outputDir}`);
+
   if (!session.pageData || !session.outputDir) {
-    await ctx.reply(MESSAGES.ERROR_NO_PAGE);
+    console.log(`[EditFlow] ERROR: Missing pageData or outputDir for user ${userId}`);
+    await ctx.reply(MESSAGES.ERROR_NO_PAGE + '\n\nTape /start pour creer une nouvelle page.');
     return true;
   }
 
@@ -254,7 +257,10 @@ export async function handleEditTextInput(
 ): Promise<boolean> {
   const session = getSession(userId);
 
+  console.log(`[EditFlow] TextInput - State: ${session.state}, Text: "${text.substring(0, 30)}..."`);
+
   if (!session.pageData || !session.outputDir) {
+    console.log(`[EditFlow] TextInput - No pageData or outputDir, returning false`);
     return false;
   }
 
@@ -456,23 +462,38 @@ async function saveAndRebuild(
 ): Promise<void> {
   const session = getSession(userId);
 
-  // Update session
-  updateSession(userId, { pageData });
+  console.log(`[EditFlow] saveAndRebuild - outputDir: ${outputDir}, pageSlug: ${session.pageSlug}`);
 
-  // Save JSON
-  await savePageData(outputDir, pageData);
+  try {
+    // Update session
+    updateSession(userId, { pageData });
 
-  // Rebuild HTML
-  const html = await buildPage(pageData);
-  await fs.writeFile(path.join(outputDir, 'index.html'), html);
+    // Save JSON
+    console.log(`[EditFlow] Saving page data...`);
+    await savePageData(outputDir, pageData);
 
-  // Redeploy to Vercel if we have a token
-  if (process.env.VERCEL_TOKEN && session.pageSlug) {
-    await ctx.sendChatAction('typing');
-    const result = await deployToVercel(outputDir, `resto-${session.pageSlug}`);
-    if (result.success && result.url) {
-      updateSession(userId, { vercelUrl: result.url });
+    // Rebuild HTML
+    console.log(`[EditFlow] Rebuilding HTML...`);
+    const html = await buildPage(pageData);
+    await fs.writeFile(path.join(outputDir, 'index.html'), html);
+
+    // Redeploy to Vercel if we have a token
+    if (process.env.VERCEL_TOKEN && session.pageSlug) {
+      console.log(`[EditFlow] Deploying to Vercel...`);
+      await ctx.sendChatAction('typing');
+      const result = await deployToVercel(outputDir, `resto-${session.pageSlug}`);
+      if (result.success && result.url) {
+        console.log(`[EditFlow] Deploy success: ${result.url}`);
+        updateSession(userId, { vercelUrl: result.url });
+      } else {
+        console.log(`[EditFlow] Deploy failed: ${result.error}`);
+      }
     }
+
+    console.log(`[EditFlow] saveAndRebuild complete`);
+  } catch (error) {
+    console.error(`[EditFlow] saveAndRebuild ERROR:`, error);
+    throw error;
   }
 }
 
