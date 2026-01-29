@@ -321,10 +321,11 @@ function buildFallbackEstimate(profile: ProspectProfile): ClaudeEstimateResult {
   const midLaborCost = (benchmark.laborCostMin + benchmark.laborCostMax) / 2;
   const midRent = (benchmark.rentMin + benchmark.rentMax) / 2;
   const midProfit = (benchmark.profitMin + benchmark.profitMax) / 2;
-  const avgTicket = segment === 'fine-dining' ? 75 : segment === 'casual-dining' ? 35 : segment === 'fast-casual' ? 18 : segment === 'qsr' ? 12 : 22;
+  const seg: string = segment;
+  const avgTicket = seg === 'fine-dining' ? 75 : seg === 'casual-dining' ? 35 : seg === 'fast-casual' ? 18 : seg === 'qsr' ? 12 : 22;
   const coversPerDay = Math.round(midRevenue / avgTicket / 30);
-  const tipsMonthly = segment === 'qsr' ? Math.round(midRevenue * 0.05) : Math.round(midRevenue * 0.17);
-  const splh = segment === 'qsr' || segment === 'fast-casual' ? 90 : 65;
+  const tipsMonthly = seg === 'qsr' ? Math.round(midRevenue * 0.05) : Math.round(midRevenue * 0.17);
+  const splh = seg === 'qsr' || seg === 'fast-casual' ? 90 : 65;
 
   return {
     segment,

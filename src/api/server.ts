@@ -490,7 +490,7 @@ app.post('/api/generate-demo', async (req: Request, res: Response) => {
     await buildAndSaveDemo(data, outputDir);
 
     // Deploy to Vercel
-    let deployResult = { success: false, url: '', deploymentId: '' };
+    let deployResult: { success: boolean; url?: string; deploymentId?: string } = { success: false };
     try {
       deployResult = await deployToVercel(outputDir, `demo-${slug}`);
     } catch (e: any) {

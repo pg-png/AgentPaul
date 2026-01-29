@@ -108,7 +108,7 @@ Number of Photos: ${gm.photos.length}`);
       sections.push(`
 --- Recent Reviews (${gm.reviews.length}) ---`);
       gm.reviews.forEach((review, i) => {
-        sections.push(`Review ${i + 1}: [${review.rating}/5] "${review.text}"${review.publishedTime ? ` (${review.publishedTime})` : ''}`);
+        sections.push(`Review ${i + 1}: [${review.rating}/5] "${review.text}"${review.date ? ` (${review.date})` : ''}`);
       });
     }
   } else {
