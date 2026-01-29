@@ -94,6 +94,7 @@ export async function buildDemo(data: DemoPageData): Promise<string> {
   // Add computed fields
   const templateData = {
     ...data,
+    cuisine: data.cuisineType,
     generatedDate: new Date().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',

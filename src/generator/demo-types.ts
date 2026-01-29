@@ -61,6 +61,7 @@ export interface ProductMatch {
   personalizedPitch: string;
   estimatedROI: string;
   painPointsMatched: string[];
+  trialUrl?: string;
 }
 
 // ============================================
@@ -73,6 +74,8 @@ export interface FinancialEstimate {
   foodCostPercent: number;
   laborCostPercent: number;
   rentPercent: number;
+  rentCostPercent: number;
+  otherCostPercent: number;
   profitMargin: number;
   avgTicket: number;
   coversPerDay: number;
@@ -117,6 +120,7 @@ export interface DemoPageData {
   prospectSlug: string;
   companyName: string;
   profilePicUrl: string;
+  logoUrl?: string;
 
   // Social stats
   socialStats: {
@@ -142,7 +146,7 @@ export interface DemoPageData {
 
   // AI Analysis
   painPoints: PainPoint[];
-  reviewInsights: string[];
+  reviewInsights: { quote: string; source: string }[];
   operationInsights: string[];
 
   // Product recommendations

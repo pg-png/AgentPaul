@@ -150,12 +150,17 @@ export async function estimateFinancials(
   const disclaimer =
     'These figures are AI-generated estimates for illustration purposes. Actual results will vary based on your specific operation.';
 
+  const rentCostPercent = claudeEstimate.rentPercent;
+  const otherCostPercent = Math.round((100 - claudeEstimate.foodCostPercent - claudeEstimate.laborCostPercent - rentCostPercent - claudeEstimate.profitMargin) * 10) / 10;
+
   const estimate: FinancialEstimate = {
     segment: claudeEstimate.segment,
     estimatedRevenue: claudeEstimate.monthlyRevenue,
     foodCostPercent: claudeEstimate.foodCostPercent,
     laborCostPercent: claudeEstimate.laborCostPercent,
     rentPercent: claudeEstimate.rentPercent,
+    rentCostPercent,
+    otherCostPercent: Math.max(otherCostPercent, 5),
     profitMargin: claudeEstimate.profitMargin,
     avgTicket: claudeEstimate.avgTicket,
     coversPerDay: claudeEstimate.coversPerDay,

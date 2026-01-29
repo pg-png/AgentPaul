@@ -5,7 +5,11 @@
 
 import { WwithAIProduct } from './demo-types';
 
-export const PRODUCT_CATALOG: WwithAIProduct[] = [
+export interface WwithAIProductWithTrial extends WwithAIProduct {
+  trialUrl?: string;
+}
+
+export const PRODUCT_CATALOG: WwithAIProductWithTrial[] = [
   {
     id: 'food-cost',
     name: 'Food Cost Sentinel',
@@ -31,6 +35,7 @@ export const PRODUCT_CATALOG: WwithAIProduct[] = [
     icon: '🍽️',
     color: '#00e5ff',
     screenshotUrl: '/screenshots/food-cost-sentinel.png',
+    trialUrl: 'https://chatgpt.com/g/g-recipe-costing-wwithai',
   },
   {
     id: 'labor-control',
@@ -56,6 +61,7 @@ export const PRODUCT_CATALOG: WwithAIProduct[] = [
     icon: '👥',
     color: '#7c4dff',
     screenshotUrl: '/screenshots/labor-control.png',
+    trialUrl: 'https://chatgpt.com/g/g-financial-health-check-wwithai',
   },
   {
     id: 'ceo-dashboard',
@@ -81,6 +87,7 @@ export const PRODUCT_CATALOG: WwithAIProduct[] = [
     icon: '📊',
     color: '#00e676',
     screenshotUrl: '/screenshots/ceo-dashboard.png',
+    trialUrl: 'https://calendly.com/wwithai/demo',
   },
   {
     id: 'voice-agent',
@@ -106,6 +113,7 @@ export const PRODUCT_CATALOG: WwithAIProduct[] = [
     icon: '📞',
     color: '#ff9100',
     screenshotUrl: '/screenshots/voice-agent.png',
+    trialUrl: 'https://calendly.com/wwithai/demo',
   },
   {
     id: 'morning-coach',
@@ -131,6 +139,7 @@ export const PRODUCT_CATALOG: WwithAIProduct[] = [
     icon: '🌅',
     color: '#ff6d00',
     screenshotUrl: '/screenshots/morning-coach.png',
+    trialUrl: 'https://calendly.com/wwithai/demo',
   },
   {
     id: 'content-pipeline',
@@ -156,13 +165,14 @@ export const PRODUCT_CATALOG: WwithAIProduct[] = [
     icon: '📱',
     color: '#d500f9',
     screenshotUrl: '/screenshots/content-pipeline.png',
+    trialUrl: 'https://calendly.com/wwithai/demo',
   },
 ];
 
 /**
  * Get all products
  */
-export function getAllProducts(): WwithAIProduct[] {
+export function getAllProducts(): WwithAIProductWithTrial[] {
   return PRODUCT_CATALOG;
 }
 

@@ -170,6 +170,7 @@ export async function matchProducts(
       personalizedPitch,
       estimatedROI,
       painPointsMatched,
+      trialUrl: (product as any).trialUrl,
     });
   }
 

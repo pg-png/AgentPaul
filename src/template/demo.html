@@ -117,6 +117,20 @@
       color: var(--accent-primary-light);
     }
 
+    .estimation-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 100px;
+      background: var(--warning-soft);
+      color: var(--warning);
+      margin-bottom: 12px;
+      cursor: help;
+    }
+
     .dot {
       width: 8px;
       height: 8px;
@@ -205,6 +219,14 @@
       pointer-events: none;
     }
 
+    .hero__avatar-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
     .hero__avatar {
       width: 110px;
       height: 110px;
@@ -212,7 +234,33 @@
       object-fit: cover;
       border: 3px solid var(--accent-primary);
       box-shadow: 0 0 30px rgba(99,102,241,0.3);
-      margin: 0 auto 20px;
+    }
+
+    .hero__logo {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-md);
+      object-fit: contain;
+      border: 2px solid var(--border-subtle);
+      background: #fff;
+      padding: 4px;
+    }
+
+    .hero__avatar-placeholder {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 3px solid var(--accent-primary);
+      box-shadow: 0 0 30px rgba(99,102,241,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+    }
+
+    .hero__avatar-placeholder svg {
+      width: 100%;
+      height: 100%;
     }
 
     .hero__name {
@@ -555,6 +603,230 @@
       color: var(--accent-primary-light);
     }
 
+    /* ===== Try It Free Button ===== */
+    .try-btn {
+      display: inline-block;
+      padding: 10px 28px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent-gradient);
+      border-radius: 100px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      margin-top: 16px;
+    }
+
+    .try-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+      text-decoration: none;
+    }
+
+    /* ===== Interactive Tool Styles ===== */
+    .interactive-tool {
+      background: var(--bg-card);
+      border: 1px solid transparent;
+      border-image: var(--accent-gradient-wide) 1;
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      margin-top: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .interactive-tool::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: var(--radius-xl);
+      border: 2px solid transparent;
+      background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+                  var(--accent-gradient-wide) border-box;
+      pointer-events: none;
+    }
+
+    .interactive-tool__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: var(--accent-gradient);
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .interactive-tool h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .tool-slider-group {
+      margin-bottom: 20px;
+    }
+
+    .tool-slider-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .tool-slider-group label span {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    .tool-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-surface);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .tool-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(99,102,241,0.5);
+    }
+
+    .tool-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(99,102,241,0.5);
+    }
+
+    .tool-output {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .tool-output__item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .tool-output__label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .tool-output__value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .tool-chart {
+      max-width: 350px;
+      margin: 16px auto 0;
+    }
+
+    /* ===== ROI Toggle Styles ===== */
+    .roi-toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .roi-toggle-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 24px;
+      min-width: 200px;
+      text-align: center;
+      transition: border-color var(--transition-fast), opacity var(--transition-fast);
+      cursor: pointer;
+    }
+
+    .roi-toggle-item.disabled {
+      opacity: 0.4;
+      border-color: transparent;
+    }
+
+    .roi-toggle-item.disabled .roi-breakdown__value {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      margin-bottom: 8px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-switch__slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--bg-surface);
+      border-radius: 22px;
+      transition: background var(--transition-fast);
+    }
+
+    .toggle-switch__slider::before {
+      content: '';
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform var(--transition-fast);
+    }
+
+    .toggle-switch input:checked + .toggle-switch__slider {
+      background: var(--success);
+    }
+
+    .toggle-switch input:checked + .toggle-switch__slider::before {
+      transform: translateX(18px);
+    }
+
     /* ===== 8. Total ROI ===== */
     .roi-section {
       padding: 72px 0;
@@ -704,8 +976,10 @@
       .product-card__footer { flex-direction: column; align-items: flex-start; }
       .score-match { margin-left: 0; }
       .hero__social-row { flex-direction: column; align-items: center; }
-      .roi-breakdown { flex-direction: column; align-items: center; }
+      .roi-breakdown, .roi-toggle-row { flex-direction: column; align-items: center; }
       .header { padding: 0 16px; }
+      .interactive-tool { padding: 24px; }
+      .tool-output { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
@@ -743,10 +1017,25 @@
   <!-- ==================== 2. HERO ==================== -->
   <section class="hero">
     <div class="container">
-      <img class="hero__avatar" src="{{profilePicUrl}}" alt="{{prospectName}}" />
+      <div class="hero__avatar-row">
+        {{#if profilePicUrl}}
+        <img class="hero__avatar" src="{{profilePicUrl}}" alt="{{prospectName}}" />
+        {{else}}
+        <div class="hero__avatar-placeholder">
+          <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="55" cy="55" r="55" fill="#1a1f2e"/>
+            <text x="55" y="62" text-anchor="middle" fill="#818cf8" font-family="Inter, sans-serif" font-weight="700" font-size="36">{{prospectName.[0]}}</text>
+          </svg>
+        </div>
+        {{/if}}
+        {{#if logoUrl}}
+        <img class="hero__logo" src="{{logoUrl}}" alt="{{companyName}} logo" />
+        {{/if}}
+      </div>
       <h1 class="hero__name">{{prospectName}}</h1>
       <p class="hero__company">{{companyName}}</p>
 
+      {{#if totalFollowers}}
       <div class="hero__social-row">
         {{#each socialStats}}
         <div class="hero__social-item">
@@ -758,20 +1047,25 @@
         </div>
         {{/each}}
       </div>
+      {{/if}}
 
       <div class="hero__stats-row">
+        {{#if totalFollowers}}
         <div class="hero__stat">
           <div class="hero__stat-value counter" data-target="{{totalFollowers}}">{{formatNumber totalFollowers}}</div>
           <div class="hero__stat-label">Total Audience</div>
         </div>
+        {{/if}}
         <div class="hero__stat">
           <div class="hero__stat-value">{{restaurantCount}}</div>
           <div class="hero__stat-label">Locations</div>
         </div>
+        {{#if rating}}
         <div class="hero__stat">
           <div class="hero__stat-value">{{rating}} <span style="color: var(--warning); font-size: 0.9em;">&#9733;</span></div>
           <div class="hero__stat-label">{{formatNumber reviewCount}} Reviews</div>
         </div>
+        {{/if}}
       </div>
     </div>
   </section>
@@ -784,21 +1078,23 @@
         <h2 class="section-title">{{restaurantName}}</h2>
 
         <div class="operation__info">
-          <span>&#127860; {{cuisine}}</span>
-          <span>&#128205; {{city}}</span>
-          <span>{{address}}</span>
+          {{#if cuisine}}<span>&#127860; {{cuisine}}</span>{{/if}}
+          {{#if city}}<span>&#128205; {{city}}</span>{{/if}}
+          {{#if address}}<span>{{address}}</span>{{/if}}
         </div>
 
-        {{#if restaurantPhotos}}
+        {{#if restaurantPhotos.length}}
         <div class="gallery-scroll">
           {{#each restaurantPhotos}}
-          <img src="{{this.url}}" alt="{{this.alt}}" loading="lazy" />
+          <img src="{{this}}" alt="Restaurant photo" loading="lazy" />
           {{/each}}
         </div>
         {{/if}}
 
+        <span class="estimation-badge" title="These figures are AI-generated estimates based on public data, industry benchmarks, and comparable restaurant analysis. Actual results may vary.">&#9888; AI-Generated Estimates</span>
         <div class="section-label" style="margin-top: 8px;">Financial Estimates</div>
 
+        {{#if financials.estimatedRevenue}}
         <div class="financials-grid">
           <div class="financial-card">
             <div class="financial-card__label">Est. Monthly Revenue</div>
@@ -829,6 +1125,9 @@
         <div class="chart-container">
           <canvas id="costBreakdownChart"></canvas>
         </div>
+        {{else}}
+        <p style="color: var(--text-muted); font-style: italic;">Financial data unavailable for this prospect.</p>
+        {{/if}}
 
         <p class="disclaimer">* Estimated data based on public sources and industry benchmarks.</p>
       </div>
@@ -836,6 +1135,7 @@
   </section>
 
   <!-- ==================== 4. OPPORTUNITIES ==================== -->
+  {{#if painPoints.length}}
   <section class="section" id="opportunities">
     <div class="container">
       <div class="section-label fade-up">Opportunities Identified</div>
@@ -856,7 +1156,7 @@
       </div>
       {{/each}}
 
-      {{#if reviewInsights}}
+      {{#if reviewInsights.length}}
       <div style="margin-top: 32px;">
         <div class="section-label fade-up">Review Insights</div>
         {{#each reviewInsights}}
@@ -869,6 +1169,7 @@
       {{/if}}
     </div>
   </section>
+  {{/if}}
 
   <!-- ==================== 5-7. PRODUCT PREVIEWS ==================== -->
   {{#each products}}
@@ -888,7 +1189,7 @@
         </div>
 
         <ul class="product-card__benefits">
-          {{#each benefits}}
+          {{#each product.keyBenefits}}
           <li>{{this}}</li>
           {{/each}}
         </ul>
@@ -904,25 +1205,120 @@
             <span class="score-match__label">{{score}}% match</span>
           </div>
         </div>
+
+        {{#if trialUrl}}
+        <div style="text-align: center; margin-top: 16px;">
+          <a class="try-btn" href="{{trialUrl}}" target="_blank" rel="noopener noreferrer">Try {{product.name}} Free</a>
+        </div>
+        {{/if}}
       </div>
+
+      <!-- ===== Food Cost Simulator (inline after food-cost product) ===== -->
+      {{#ifEquals product.id "food-cost"}}
+      <div class="interactive-tool fade-up" id="food-cost-sim">
+        <span class="interactive-tool__badge">&#9889; Interactive Tool</span>
+        <h3>Food Cost Savings Simulator</h3>
+
+        <div class="tool-slider-group">
+          <label>Monthly Revenue <span id="fc-rev-val"></span></label>
+          <input type="range" class="tool-slider" id="fc-revenue" min="20000" max="200000" step="5000" />
+        </div>
+
+        <div class="tool-slider-group">
+          <label>Current Food Cost % <span id="fc-current-val"></span></label>
+          <input type="range" class="tool-slider" id="fc-current" min="20" max="45" step="0.5" />
+        </div>
+
+        <div class="tool-slider-group">
+          <label>Target Food Cost % <span id="fc-target-val"></span></label>
+          <input type="range" class="tool-slider" id="fc-target" min="18" max="35" step="0.5" />
+        </div>
+
+        <div class="tool-output">
+          <div class="tool-output__item">
+            <div class="tool-output__label">Monthly Savings</div>
+            <div class="tool-output__value" id="fc-monthly-save">$0</div>
+          </div>
+          <div class="tool-output__item">
+            <div class="tool-output__label">Annual Savings</div>
+            <div class="tool-output__value" id="fc-annual-save">$0</div>
+          </div>
+          <div class="tool-output__item">
+            <div class="tool-output__label">Plates Saved</div>
+            <div class="tool-output__value" id="fc-plates">0</div>
+          </div>
+        </div>
+
+        <div class="tool-chart">
+          <canvas id="fcSimChart"></canvas>
+        </div>
+      </div>
+      {{/ifEquals}}
+
+      <!-- ===== Labor Dashboard Simulator (inline after labor-control product) ===== -->
+      {{#ifEquals product.id "labor-control"}}
+      <div class="interactive-tool fade-up" id="labor-sim">
+        <span class="interactive-tool__badge">&#9889; Interactive Tool</span>
+        <h3>Labor Cost Dashboard Simulator</h3>
+
+        <div class="tool-slider-group">
+          <label>Weekly Revenue <span id="lc-rev-val"></span></label>
+          <input type="range" class="tool-slider" id="lc-revenue" min="5000" max="50000" step="1000" />
+        </div>
+
+        <div class="tool-slider-group">
+          <label>Current Labor % <span id="lc-current-val"></span></label>
+          <input type="range" class="tool-slider" id="lc-current" min="20" max="40" step="0.5" />
+        </div>
+
+        <div class="tool-slider-group">
+          <label>SPLH Target <span id="lc-splh-val"></span></label>
+          <input type="range" class="tool-slider" id="lc-splh" min="40" max="120" step="5" />
+        </div>
+
+        <div class="tool-output">
+          <div class="tool-output__item">
+            <div class="tool-output__label">Staff Hours Needed</div>
+            <div class="tool-output__value" id="lc-hours">0</div>
+          </div>
+          <div class="tool-output__item">
+            <div class="tool-output__label">Optimized Labor Cost</div>
+            <div class="tool-output__value" id="lc-optimized">$0</div>
+          </div>
+          <div class="tool-output__item">
+            <div class="tool-output__label">Weekly Savings</div>
+            <div class="tool-output__value" id="lc-savings">$0</div>
+          </div>
+        </div>
+
+        <div class="tool-chart">
+          <canvas id="lcSimChart"></canvas>
+        </div>
+      </div>
+      {{/ifEquals}}
+
     </div>
   </section>
   {{/each}}
 
-  <!-- ==================== 8. TOTAL ROI SUMMARY ==================== -->
+  <!-- ==================== 8. TOTAL ROI SUMMARY (Interactive) ==================== -->
   <section class="roi-section section" id="roi">
     <div class="container">
       <div class="section-label fade-up">Total Impact</div>
       <h2 class="section-title fade-up">What WwithAI Could Save You</h2>
 
-      <div class="roi-section__total fade-up">
+      <div class="roi-section__total fade-up" id="roi-total-display">
         {{formatCurrency totalROI.totalAnnualSavings}}
       </div>
       <p class="roi-section__per-year fade-up">estimated annual savings</p>
 
-      <div class="roi-breakdown fade-up">
+      <div class="roi-toggle-row fade-up" id="roi-toggles">
         {{#each totalROI.breakdown}}
-        <div class="roi-breakdown__item">
+        <div class="roi-toggle-item" data-product="{{productId}}" data-saving="{{annualSaving}}">
+          <label class="toggle-switch">
+            <input type="checkbox" checked data-product-id="{{productId}}" />
+            <span class="toggle-switch__slider"></span>
+          </label>
           <div class="roi-breakdown__product">{{productName}}</div>
           <div class="roi-breakdown__value">{{formatCurrency annualSaving}}</div>
         </div>
@@ -968,6 +1364,13 @@
     var financials = {{{json financials}}};
     var totalROI = {{{json totalROI}}};
 
+    // ---- Utility: Format currency ----
+    function fmtCurrency(n) {
+      if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return '$' + (n / 1000).toFixed(1) + 'K';
+      return '$' + Math.round(n).toLocaleString();
+    }
+
     // ---- Chart Defaults ----
     Chart.defaults.color = '#a1a7bf';
     Chart.defaults.font.family = "'Inter', sans-serif";
@@ -981,8 +1384,8 @@
 
       var food = financials.foodCostPercent || 0;
       var labor = financials.laborCostPercent || 0;
-      var rent = financials.rentCostPercent || 10;
-      var other = financials.otherCostPercent || 10;
+      var rent = financials.rentCostPercent || financials.rentPercent || 10;
+      var other = financials.otherCostPercent || 8;
       var profit = Math.max(0, 100 - food - labor - rent - other);
 
       new Chart(ctx, {
@@ -1024,7 +1427,7 @@
               padding: 12,
               callbacks: {
                 label: function (context) {
-                  return ' ' + context.label + ': ' + context.parsed + '%';
+                  return ' ' + context.label + ': ' + context.parsed.toFixed(1) + '%';
                 }
               }
             }
@@ -1033,15 +1436,19 @@
       });
     })();
 
-    // ---- 2. ROI Before/After Bar Chart ----
-    (function () {
+    // ---- 2. ROI Before/After Bar Chart (dynamic) ----
+    var roiChart = null;
+    function buildROIChart(savings) {
       var ctx = document.getElementById('roiComparisonChart');
       if (!ctx) return;
 
-      var currentCosts = totalROI.currentAnnualCosts || 0;
-      var withWwithAI = totalROI.projectedAnnualCosts || (currentCosts - (totalROI.totalAnnualSavings || 0));
+      var annualRevenue = (financials.estimatedRevenue || 0) * 12;
+      var currentCosts = annualRevenue * ((financials.foodCostPercent || 30) + (financials.laborCostPercent || 30)) / 100;
+      var withWwithAI = currentCosts - savings;
 
-      new Chart(ctx, {
+      if (roiChart) roiChart.destroy();
+
+      roiChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: ['Current Costs', 'With WwithAI'],
@@ -1073,9 +1480,7 @@
               },
               ticks: {
                 callback: function (value) {
-                  if (value >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
-                  if (value >= 1000) return '$' + (value / 1000).toFixed(0) + 'K';
-                  return '$' + value;
+                  return fmtCurrency(value);
                 },
                 font: { size: 11 }
               }
@@ -1097,14 +1502,191 @@
               padding: 12,
               callbacks: {
                 label: function (context) {
-                  var val = context.parsed.y;
-                  return ' $' + val.toLocaleString();
+                  return ' $' + context.parsed.y.toLocaleString();
                 }
               }
             }
           }
         }
       });
+    }
+    buildROIChart(totalROI.totalAnnualSavings || 0);
+
+    // ---- 3. ROI Interactive Toggles ----
+    (function () {
+      var toggles = document.querySelectorAll('#roi-toggles input[type="checkbox"]');
+      if (!toggles.length) return;
+
+      function recalcROI() {
+        var total = 0;
+        toggles.forEach(function (cb) {
+          var item = cb.closest('.roi-toggle-item');
+          var saving = parseInt(item.getAttribute('data-saving'), 10) || 0;
+          if (cb.checked) {
+            total += saving;
+            item.classList.remove('disabled');
+          } else {
+            item.classList.add('disabled');
+          }
+        });
+
+        // Update total display with animation
+        var display = document.getElementById('roi-total-display');
+        if (display) display.textContent = fmtCurrency(total);
+
+        // Update bar chart
+        buildROIChart(total);
+      }
+
+      toggles.forEach(function (cb) {
+        cb.addEventListener('change', recalcROI);
+      });
+    })();
+
+    // ---- 4. Food Cost Simulator ----
+    (function () {
+      var revSlider = document.getElementById('fc-revenue');
+      var curSlider = document.getElementById('fc-current');
+      var tgtSlider = document.getElementById('fc-target');
+      if (!revSlider) return;
+
+      var avgTicket = financials.avgTicket || 35;
+      var fcChart = null;
+
+      // Set defaults from financials
+      revSlider.value = financials.estimatedRevenue || 75000;
+      curSlider.value = financials.foodCostPercent || 30;
+      tgtSlider.value = Math.max(18, (financials.foodCostPercent || 30) - 3);
+
+      function updateFC() {
+        var rev = parseFloat(revSlider.value);
+        var cur = parseFloat(curSlider.value);
+        var tgt = parseFloat(tgtSlider.value);
+
+        document.getElementById('fc-rev-val').textContent = fmtCurrency(rev);
+        document.getElementById('fc-current-val').textContent = cur.toFixed(1) + '%';
+        document.getElementById('fc-target-val').textContent = tgt.toFixed(1) + '%';
+
+        var monthlySave = rev * (cur - tgt) / 100;
+        var annualSave = monthlySave * 12;
+        var plates = avgTicket > 0 ? Math.round(monthlySave / avgTicket) : 0;
+
+        document.getElementById('fc-monthly-save').textContent = fmtCurrency(Math.max(0, monthlySave));
+        document.getElementById('fc-annual-save').textContent = fmtCurrency(Math.max(0, annualSave));
+        document.getElementById('fc-plates').textContent = Math.max(0, plates).toLocaleString();
+
+        // Update chart
+        var ctx = document.getElementById('fcSimChart');
+        if (!ctx) return;
+        if (fcChart) fcChart.destroy();
+        fcChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Current', 'Target'],
+            datasets: [{
+              data: [rev * cur / 100, rev * tgt / 100],
+              backgroundColor: ['rgba(239,68,68,0.7)', 'rgba(34,197,94,0.7)'],
+              borderColor: ['#ef4444', '#22c55e'],
+              borderWidth: 2,
+              borderRadius: 8,
+              borderSkipped: false,
+              barPercentage: 0.5
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+                ticks: { callback: function(v) { return fmtCurrency(v); }, font: { size: 10 } }
+              },
+              x: { grid: { display: false }, ticks: { font: { size: 12, weight: '600' } } }
+            },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+
+      revSlider.addEventListener('input', updateFC);
+      curSlider.addEventListener('input', updateFC);
+      tgtSlider.addEventListener('input', updateFC);
+      updateFC();
+    })();
+
+    // ---- 5. Labor Dashboard Simulator ----
+    (function () {
+      var revSlider = document.getElementById('lc-revenue');
+      var curSlider = document.getElementById('lc-current');
+      var splhSlider = document.getElementById('lc-splh');
+      if (!revSlider) return;
+
+      var lcChart = null;
+
+      // Set defaults from financials
+      revSlider.value = Math.round((financials.estimatedRevenue || 75000) / 4);
+      curSlider.value = financials.laborCostPercent || 30;
+      splhSlider.value = financials.splh || 65;
+
+      function updateLC() {
+        var weeklyRev = parseFloat(revSlider.value);
+        var curLabor = parseFloat(curSlider.value);
+        var splh = parseFloat(splhSlider.value);
+
+        document.getElementById('lc-rev-val').textContent = fmtCurrency(weeklyRev);
+        document.getElementById('lc-current-val').textContent = curLabor.toFixed(1) + '%';
+        document.getElementById('lc-splh-val').textContent = fmtCurrency(splh);
+
+        var hoursNeeded = splh > 0 ? Math.round(weeklyRev / splh) : 0;
+        var currentLaborCost = weeklyRev * curLabor / 100;
+        var avgWage = 18;
+        var optimizedCost = hoursNeeded * avgWage;
+        var savings = Math.max(0, currentLaborCost - optimizedCost);
+
+        document.getElementById('lc-hours').textContent = hoursNeeded.toLocaleString() + 'h';
+        document.getElementById('lc-optimized').textContent = fmtCurrency(optimizedCost);
+        document.getElementById('lc-savings').textContent = fmtCurrency(savings);
+
+        // Update doughnut chart
+        var ctx = document.getElementById('lcSimChart');
+        if (!ctx) return;
+        if (lcChart) lcChart.destroy();
+
+        var laborPct = weeklyRev > 0 ? (optimizedCost / weeklyRev * 100) : 0;
+        var otherPct = 100 - laborPct;
+
+        lcChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Optimized Labor', 'Other Costs & Profit'],
+            datasets: [{
+              data: [laborPct.toFixed(1), otherPct.toFixed(1)],
+              backgroundColor: ['#7c4dff', 'rgba(255,255,255,0.08)'],
+              borderColor: '#1a1f2e',
+              borderWidth: 3,
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            cutout: '65%',
+            plugins: {
+              legend: { position: 'bottom', labels: { padding: 14, font: { size: 11 } } },
+              tooltip: {
+                backgroundColor: '#1a1f2e',
+                callbacks: {
+                  label: function(c) { return ' ' + c.label + ': ' + c.parsed + '%'; }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      revSlider.addEventListener('input', updateLC);
+      curSlider.addEventListener('input', updateLC);
+      splhSlider.addEventListener('input', updateLC);
+      updateLC();
     })();
 
     // ---- Scroll Animations ----
@@ -1133,10 +1715,9 @@
           if (!entry.isIntersecting) return;
           var el = entry.target;
           var target = parseInt(el.getAttribute('data-target'), 10);
-          if (isNaN(target)) return;
+          if (isNaN(target) || target === 0) return;
 
           var duration = 1800;
-          var start = 0;
           var startTime = null;
 
           function easeOut(t) { return 1 - Math.pow(1 - t, 3); }

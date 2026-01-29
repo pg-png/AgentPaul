@@ -13,6 +13,7 @@ export interface WebsiteData {
   title: string;
   description: string;
   ogImage: string;
+  logoUrl: string;
   socialLinks: SocialLinks;
   features: WebsiteFeatures;
   techStack: string[];
@@ -139,6 +140,29 @@ export async function scrapeWebsite(websiteUrl: string): Promise<WebsiteData> {
         .map(a => a.textContent?.trim() || '')
         .filter(t => t.length > 0 && t.length < 30);
 
+      // Logo extraction — try multiple sources in order of preference
+      let logoUrl = '';
+      const appleTouchIcon = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement;
+      const iconLink = document.querySelector('link[rel="icon"][type="image/png"], link[rel="icon"][sizes]') as HTMLLinkElement;
+      const shortcutIcon = document.querySelector('link[rel="shortcut icon"]') as HTMLLinkElement;
+      const logoImg = document.querySelector('img[class*="logo"], img[alt*="logo" i], img[src*="logo" i], header img, .header img, .navbar-brand img') as HTMLImageElement;
+
+      if (appleTouchIcon?.href) {
+        logoUrl = appleTouchIcon.href;
+      } else if (iconLink?.href) {
+        logoUrl = iconLink.href;
+      } else if (logoImg?.src) {
+        logoUrl = logoImg.src;
+      } else if (shortcutIcon?.href) {
+        logoUrl = shortcutIcon.href;
+      } else if (getMeta('og:image')) {
+        logoUrl = getMeta('og:image');
+      }
+      // Fallback to /favicon.ico if nothing else found
+      if (!logoUrl) {
+        logoUrl = window.location.origin + '/favicon.ico';
+      }
+
       // Contact info extraction
       const emailMatch = allText.match(/[\w.+-]+@[\w-]+\.[\w.]+/);
       const phoneMatch = allText.match(/(\+?1?\s*[-.]?\s*\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/);
@@ -153,6 +177,7 @@ export async function scrapeWebsite(websiteUrl: string): Promise<WebsiteData> {
         title: getMeta('og:title') || document.title || '',
         description: getMeta('og:description') || getMeta('description') || '',
         ogImage: getMeta('og:image') || '',
+        logoUrl,
         socialLinks,
         features,
         techStack,
@@ -175,6 +200,7 @@ export async function scrapeWebsite(websiteUrl: string): Promise<WebsiteData> {
       title: '',
       description: '',
       ogImage: '',
+      logoUrl: '',
       socialLinks: { instagram: '', facebook: '', tiktok: '', youtube: '', twitter: '', yelp: '' },
       features: {
         hasOnlineOrdering: false,

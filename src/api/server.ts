@@ -453,13 +453,26 @@ app.post('/api/generate-demo', async (req: Request, res: Response) => {
 
       const gm = socialData?.googleMaps || socialData?.gmaps;
 
+      // Calculate totalFollowers as sum of all platform followers
+      const totalFollowers = socialStats.reduce((sum: number, s: { followers: number }) => sum + (s.followers || 0), 0);
+
+      // Map reviews to { quote, source } format
+      const reviewInsights = (gm?.reviews || []).slice(0, 3).map((r: any) => ({
+        quote: (r.text || '').substring(0, 150),
+        source: r.author || r.authorName || 'Google Review',
+      })).filter((r: any) => r.quote.length > 0);
+
+      // Extract logo URL: try website ogImage, then Instagram profile pic
+      const logoUrl = socialData?.website?.ogImage || socialData?.website?.logoUrl || socialData?.instagram?.profilePicUrl || '';
+
       data = {
         prospectName,
         prospectSlug: '',
         companyName: prospectCompany || gm?.name || '',
         profilePicUrl: socialData?.instagram?.profilePicUrl || socialData?.tiktok?.profilePicUrl || '',
+        logoUrl,
         socialStats,
-        totalFollowers: socialData?.totalFollowers || 0,
+        totalFollowers,
         restaurantCount: profile.restaurantCount || 1,
         restaurantName: gm?.name || prospectCompany || prospectName,
         rating: gm?.rating || 0,
@@ -468,9 +481,9 @@ app.post('/api/generate-demo', async (req: Request, res: Response) => {
         city: gm?.address?.split(',')?.slice(-2, -1)[0]?.trim() || '',
         address: gm?.address || '',
         restaurantPhotos: (gm?.photos || []).slice(0, 6).map((p: any) => p.url || p),
-        financials: financials || { estimatedRevenue: 0, monthlyData: [], roiWithWwithAI: { totalAnnualSavings: 0, breakdown: [], paybackMonths: 0 }, disclaimer: '' },
+        financials: financials || { estimatedRevenue: 0, monthlyData: [], roiWithWwithAI: { totalAnnualSavings: 0, breakdown: [], paybackMonths: 0 }, disclaimer: '', rentCostPercent: 10, otherCostPercent: 8 },
         painPoints: profile.painPoints || [],
-        reviewInsights: (gm?.reviews || []).slice(0, 3).map((r: any) => r.text?.substring(0, 150) || ''),
+        reviewInsights,
         operationInsights: [],
         products: products || [],
         totalROI: financials?.roiWithWwithAI || { totalAnnualSavings: 0, breakdown: [], paybackMonths: 0 },
