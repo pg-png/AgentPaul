@@ -10,6 +10,12 @@ import { getBotInstance } from '../bot';
 import { scrapeRestaurant } from '../scraper';
 import { generateContent, buildPage, savePageData, loadPageData, PageData } from '../generator';
 import { deployToVercel, upsertPageRecord, getPublishedPages } from '../deploy';
+import { aggregateSocialData, ScrapeRequest } from '../scraper/social-aggregator';
+import { analyzeProspect } from '../generator/prospect-analyzer';
+import { matchProducts } from '../generator/product-matcher';
+import { estimateFinancials } from '../generator/financial-estimator';
+import { buildAndSaveDemo } from '../generator/demo-builder';
+import { DemoPageData, ProspectProfile, ProductMatch } from '../generator/demo-types';
 
 const app = express();
 
@@ -301,6 +307,208 @@ app.post('/webhook', async (req: Request, res: Response) => {
     }
   }
   res.sendStatus(200);
+});
+
+// ============================================
+// AGENT PAUL V2 — PROSPECT DEMO ENDPOINTS
+// ============================================
+
+/**
+ * POST /api/research/google-maps
+ * Scrape restaurant data from Google Maps
+ */
+app.post('/api/research/google-maps', async (req: Request, res: Response) => {
+  try {
+    const { name, city } = req.body;
+    if (!name) return res.status(400).json({ error: 'name is required' });
+
+    console.log(`[API] Google Maps research: ${name}, ${city || ''}`);
+    const outputDir = path.join(process.cwd(), 'output', 'prospects', generateSlug(name));
+    const data = await scrapeRestaurant(name, city || '', outputDir);
+
+    res.json({ success: true, data });
+  } catch (error: any) {
+    console.error('[API] Google Maps research error:', error);
+    res.status(500).json({ error: error.message || 'Research failed' });
+  }
+});
+
+/**
+ * POST /api/research/social
+ * Scrape all social platforms in parallel
+ */
+app.post('/api/research/social', async (req: Request, res: Response) => {
+  try {
+    const { instagram, tiktok, youtube, website, gmapsQuery, gmapsCity } = req.body;
+
+    console.log('[API] Social research starting...');
+    const scrapeReq: ScrapeRequest = {
+      instagram: instagram || undefined,
+      tiktok: tiktok || undefined,
+      youtube: youtube || undefined,
+      website: website || undefined,
+      gmapsQuery: gmapsQuery || undefined,
+      gmapsCity: gmapsCity || undefined,
+    };
+
+    const data = await aggregateSocialData(scrapeReq);
+
+    res.json({ success: true, data });
+  } catch (error: any) {
+    console.error('[API] Social research error:', error);
+    res.status(500).json({ error: error.message || 'Social research failed' });
+  }
+});
+
+/**
+ * POST /api/analyze/prospect
+ * Run Claude prospect analysis on scraped data
+ */
+app.post('/api/analyze/prospect', async (req: Request, res: Response) => {
+  try {
+    const { socialData } = req.body;
+    if (!socialData) return res.status(400).json({ error: 'socialData is required' });
+
+    console.log('[API] Analyzing prospect...');
+    const profile = await analyzeProspect(socialData);
+
+    res.json({ success: true, profile });
+  } catch (error: any) {
+    console.error('[API] Prospect analysis error:', error);
+    res.status(500).json({ error: error.message || 'Analysis failed' });
+  }
+});
+
+/**
+ * POST /api/analyze/products
+ * Match WwithAI products to prospect pain points
+ */
+app.post('/api/analyze/products', async (req: Request, res: Response) => {
+  try {
+    const { profile } = req.body;
+    if (!profile) return res.status(400).json({ error: 'profile is required' });
+
+    console.log('[API] Matching products...');
+    const products = await matchProducts(profile as ProspectProfile);
+
+    res.json({ success: true, products });
+  } catch (error: any) {
+    console.error('[API] Product matching error:', error);
+    res.status(500).json({ error: error.message || 'Product matching failed' });
+  }
+});
+
+/**
+ * POST /api/analyze/financials
+ * Estimate financial data for prospect
+ */
+app.post('/api/analyze/financials', async (req: Request, res: Response) => {
+  try {
+    const { profile, products, gmapsData } = req.body;
+    if (!profile) return res.status(400).json({ error: 'profile is required' });
+
+    console.log('[API] Estimating financials...');
+    const financials = await estimateFinancials(
+      profile as ProspectProfile,
+      products as ProductMatch[] || [],
+      gmapsData
+    );
+
+    res.json({ success: true, financials });
+  } catch (error: any) {
+    console.error('[API] Financial estimation error:', error);
+    res.status(500).json({ error: error.message || 'Financial estimation failed' });
+  }
+});
+
+/**
+ * POST /api/generate-demo
+ * Build demo HTML and deploy to Vercel
+ * Accepts either a ready demoData object or raw pipeline outputs (profile, products, financials, socialData)
+ */
+app.post('/api/generate-demo', async (req: Request, res: Response) => {
+  try {
+    let data: DemoPageData;
+
+    if (req.body.demoData && req.body.demoData.prospectName) {
+      // Ready-made DemoPageData passed directly
+      data = req.body.demoData as DemoPageData;
+    } else {
+      // Assemble from raw pipeline outputs (n8n workflow path)
+      const { prospectName, prospectCompany, profile, products, financials, socialData } = req.body.demoData || req.body;
+      if (!prospectName || !profile) {
+        return res.status(400).json({ error: 'prospectName and profile are required' });
+      }
+
+      const socialStats: { platform: string; handle: string; followers: number; icon: string }[] = [];
+      if (socialData?.instagram?.followers > 0) {
+        socialStats.push({ platform: 'Instagram', handle: '@' + socialData.instagram.username, followers: socialData.instagram.followers, icon: '📸' });
+      }
+      if (socialData?.tiktok?.followers > 0) {
+        socialStats.push({ platform: 'TikTok', handle: '@' + socialData.tiktok.username, followers: socialData.tiktok.followers, icon: '🎵' });
+      }
+      if (socialData?.youtube?.subscribers > 0) {
+        socialStats.push({ platform: 'YouTube', handle: socialData.youtube.channelName, followers: socialData.youtube.subscribers, icon: '🎬' });
+      }
+
+      const gm = socialData?.googleMaps || socialData?.gmaps;
+
+      data = {
+        prospectName,
+        prospectSlug: '',
+        companyName: prospectCompany || gm?.name || '',
+        profilePicUrl: socialData?.instagram?.profilePicUrl || socialData?.tiktok?.profilePicUrl || '',
+        socialStats,
+        totalFollowers: socialData?.totalFollowers || 0,
+        restaurantCount: profile.restaurantCount || 1,
+        restaurantName: gm?.name || prospectCompany || prospectName,
+        rating: gm?.rating || 0,
+        reviewCount: gm?.reviewCount || 0,
+        cuisineType: (profile.cuisineTypes || []).join(', ') || 'Restaurant',
+        city: gm?.address?.split(',')?.slice(-2, -1)[0]?.trim() || '',
+        address: gm?.address || '',
+        restaurantPhotos: (gm?.photos || []).slice(0, 6).map((p: any) => p.url || p),
+        financials: financials || { estimatedRevenue: 0, monthlyData: [], roiWithWwithAI: { totalAnnualSavings: 0, breakdown: [], paybackMonths: 0 }, disclaimer: '' },
+        painPoints: profile.painPoints || [],
+        reviewInsights: (gm?.reviews || []).slice(0, 3).map((r: any) => r.text?.substring(0, 150) || ''),
+        operationInsights: [],
+        products: products || [],
+        totalROI: financials?.roiWithWwithAI || { totalAnnualSavings: 0, breakdown: [], paybackMonths: 0 },
+        ctaText: `Ready to save $${Math.round((financials?.roiWithWwithAI?.totalAnnualSavings || 0) / 1000)}K/year?`,
+        calendlyUrl: 'https://calendly.com/wwithai/demo',
+        generatedAt: new Date().toISOString(),
+        disclaimer: financials?.disclaimer || 'AI-generated estimates for illustration purposes.',
+      };
+    }
+
+    const slug = data.prospectSlug || generateSlug(data.prospectName);
+    const outputDir = path.join(process.cwd(), 'output', 'demos', slug);
+
+    console.log(`[API] Building demo for ${data.prospectName}...`);
+
+    // Build demo HTML
+    await buildAndSaveDemo(data, outputDir);
+
+    // Deploy to Vercel
+    let deployResult = { success: false, url: '', deploymentId: '' };
+    try {
+      deployResult = await deployToVercel(outputDir, `demo-${slug}`);
+    } catch (e: any) {
+      console.warn('[API] Vercel deploy failed:', e.message);
+    }
+
+    res.json({
+      success: true,
+      slug,
+      localPath: outputDir,
+      deployed: deployResult.success,
+      demoUrl: deployResult.url || null,
+      deploymentId: deployResult.deploymentId || null,
+    });
+  } catch (error: any) {
+    console.error('[API] Demo generation error:', error);
+    res.status(500).json({ error: error.message || 'Demo generation failed' });
+  }
 });
 
 // Debug: List output directory

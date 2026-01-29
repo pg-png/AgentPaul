@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WwithAI Demo — {{prospectName}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== CSS Variables ===== */
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-card: #1a1f2e;
+      --bg-card-hover: #222840;
+      --bg-surface: #141827;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-accent: rgba(99, 102, 241, 0.3);
+      --text-primary: #ffffff;
+      --text-secondary: #a1a7bf;
+      --text-muted: #6b7194;
+      --accent-primary: #6366f1;
+      --accent-primary-light: #818cf8;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      --accent-gradient-wide: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #a855f7 60%, #ec4899 100%);
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.15);
+      --warning-soft: rgba(245, 158, 11, 0.15);
+      --success-soft: rgba(34, 197, 94, 0.15);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25);
+      --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+      --transition-fast: 0.2s ease;
+      --transition-med: 0.35s ease;
+    }
+
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: var(--accent-primary-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ===== Typography ===== */
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-primary-light);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+    }
+
+    /* ===== Cards ===== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-card);
+      transition: border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+    }
+
+    /* ===== Utility ===== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 100px;
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--accent-primary-light);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .dot--danger { background: var(--danger); box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+    .dot--warning { background: var(--warning); box-shadow: 0 0 8px rgba(245,158,11,0.5); }
+    .dot--success { background: var(--success); box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    /* ===== Animated Counter ===== */
+    .counter[data-target] {
+      transition: none;
+    }
+
+    /* ===== 1. Header ===== */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header__logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .header__logo-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-gradient);
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .header__prepared {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .header__prepared strong {
+      color: var(--text-primary);
+    }
+
+    /* ===== 2. Hero ===== */
+    .hero {
+      padding: 120px 0 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero__avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent-primary);
+      box-shadow: 0 0 30px rgba(99,102,241,0.3);
+      margin: 0 auto 20px;
+    }
+
+    .hero__name {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 4px;
+      background: var(--accent-gradient-wide);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero__company {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .hero__social-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+
+    .hero__social-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+    }
+
+    .hero__social-icon {
+      font-size: 1.3rem;
+    }
+
+    .hero__social-info {
+      text-align: left;
+    }
+
+    .hero__social-handle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hero__social-followers {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .hero__stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 12px;
+    }
+
+    .hero__stat {
+      text-align: center;
+    }
+
+    .hero__stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .hero__stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ===== 3. Your Operation ===== */
+    .section { padding: 64px 0; }
+
+    .operation__info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      margin-bottom: 24px;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .operation__info span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gallery-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      margin-bottom: 32px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .gallery-scroll::-webkit-scrollbar { height: 6px; }
+    .gallery-scroll::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 3px; }
+    .gallery-scroll::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 3px; }
+
+    .gallery-scroll img {
+      width: 260px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      scroll-snap-align: start;
+      flex-shrink: 0;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .financials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .financial-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      text-align: center;
+    }
+
+    .financial-card__label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .financial-card__value {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .chart-container {
+      max-width: 400px;
+      margin: 0 auto 16px;
+    }
+
+    .disclaimer {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-style: italic;
+    }
+
+    /* ===== 4. Opportunities ===== */
+    .pain-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 14px;
+      transition: border-color var(--transition-fast);
+    }
+
+    .pain-card:hover {
+      border-color: var(--border-accent);
+    }
+
+    .pain-card__severity {
+      padding-top: 4px;
+    }
+
+    .pain-card__title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .pain-card__desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .review-insight {
+      background: var(--bg-surface);
+      border-left: 3px solid var(--warning);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .review-insight__source {
+      font-style: normal;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ===== 5-7. Product Previews ===== */
+    .product-section {
+      padding: 56px 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--product-color, var(--accent-gradient));
+    }
+
+    .product-card__header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .product-card__icon {
+      font-size: 2.2rem;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius-md);
+    }
+
+    .product-card__name {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .product-card__tagline {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .product-card__pitch {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: rgba(255,255,255,0.02);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--product-color, var(--accent-primary));
+    }
+
+    .product-card__benefits {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .product-card__benefits li {
+      padding: 8px 0;
+      padding-left: 28px;
+      position: relative;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .product-card__benefits li::before {
+      content: '\2713';
+      position: absolute;
+      left: 0;
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .product-card__footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .product-card__roi {
+      font-size: 1rem;
+    }
+
+    .product-card__roi strong {
+      color: var(--success);
+      font-size: 1.2rem;
+    }
+
+    .score-match {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .score-match__bar {
+      width: 100px;
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .score-match__fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--accent-gradient);
+      transition: width 1s ease;
+    }
+
+    .score-match__label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-primary-light);
+    }
+
+    /* ===== 8. Total ROI ===== */
+    .roi-section {
+      padding: 72px 0;
+      text-align: center;
+    }
+
+    .roi-section__total {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      background: var(--accent-gradient-wide);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 16px 0 8px;
+    }
+
+    .roi-section__per-year {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+    }
+
+    .roi-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .roi-breakdown__item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px 28px;
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .roi-breakdown__product {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .roi-breakdown__value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .roi-chart-container {
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+
+    .payback-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--success-soft);
+      color: var(--success);
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 10px 24px;
+      border-radius: 100px;
+    }
+
+    /* ===== 9. CTA ===== */
+    .cta-section {
+      padding: 80px 24px;
+      text-align: center;
+      background: var(--accent-gradient);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
+    }
+
+    .cta-section > * { position: relative; z-index: 1; }
+
+    .cta-section__heading {
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #fff;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      padding: 16px 48px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      background: #fff;
+      border-radius: 100px;
+      text-decoration: none;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      text-decoration: none;
+    }
+
+    .cta-email {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .cta-email a {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    /* ===== 10. Footer ===== */
+    .footer {
+      padding: 40px 24px;
+      text-align: center;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .footer__brand {
+      font-weight: 700;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .financials-grid { grid-template-columns: repeat(2, 1fr); }
+      .product-card { padding: 24px; }
+      .product-card__footer { flex-direction: column; align-items: flex-start; }
+      .score-match { margin-left: 0; }
+      .hero__social-row { flex-direction: column; align-items: center; }
+      .roi-breakdown { flex-direction: column; align-items: center; }
+      .header { padding: 0 16px; }
+    }
+
+    @media (max-width: 480px) {
+      .financials-grid { grid-template-columns: 1fr; }
+      .hero__stats-row { gap: 24px; }
+      .container { padding: 0 16px; }
+    }
+
+    /* ===== Fade-in animation ===== */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== 1. HEADER ==================== -->
+  <header class="header">
+    <div class="header__logo">
+      <span class="header__logo-mark">W</span>
+      <span>Wwith<span style="color: var(--accent-primary-light)">AI</span></span>
+    </div>
+    <div class="header__prepared">
+      Prepared for <strong>{{prospectName}}</strong>
+    </div>
+  </header>
+
+  <!-- ==================== 2. HERO ==================== -->
+  <section class="hero">
+    <div class="container">
+      <img class="hero__avatar" src="{{profilePicUrl}}" alt="{{prospectName}}" />
+      <h1 class="hero__name">{{prospectName}}</h1>
+      <p class="hero__company">{{companyName}}</p>
+
+      <div class="hero__social-row">
+        {{#each socialStats}}
+        <div class="hero__social-item">
+          <span class="hero__social-icon">{{{icon}}}</span>
+          <div class="hero__social-info">
+            <div class="hero__social-handle">{{handle}}</div>
+            <div class="hero__social-followers">{{formatNumber followers}} followers</div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+
+      <div class="hero__stats-row">
+        <div class="hero__stat">
+          <div class="hero__stat-value counter" data-target="{{totalFollowers}}">{{formatNumber totalFollowers}}</div>
+          <div class="hero__stat-label">Total Audience</div>
+        </div>
+        <div class="hero__stat">
+          <div class="hero__stat-value">{{restaurantCount}}</div>
+          <div class="hero__stat-label">Locations</div>
+        </div>
+        <div class="hero__stat">
+          <div class="hero__stat-value">{{rating}} <span style="color: var(--warning); font-size: 0.9em;">&#9733;</span></div>
+          <div class="hero__stat-label">{{formatNumber reviewCount}} Reviews</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. YOUR OPERATION ==================== -->
+  <section class="section" id="operation">
+    <div class="container">
+      <div class="card fade-up">
+        <div class="section-label">Your Operation</div>
+        <h2 class="section-title">{{restaurantName}}</h2>
+
+        <div class="operation__info">
+          <span>&#127860; {{cuisine}}</span>
+          <span>&#128205; {{city}}</span>
+          <span>{{address}}</span>
+        </div>
+
+        {{#if restaurantPhotos}}
+        <div class="gallery-scroll">
+          {{#each restaurantPhotos}}
+          <img src="{{this.url}}" alt="{{this.alt}}" loading="lazy" />
+          {{/each}}
+        </div>
+        {{/if}}
+
+        <div class="section-label" style="margin-top: 8px;">Financial Estimates</div>
+
+        <div class="financials-grid">
+          <div class="financial-card">
+            <div class="financial-card__label">Est. Monthly Revenue</div>
+            <div class="financial-card__value">{{formatCurrency financials.estimatedRevenue}}</div>
+          </div>
+          <div class="financial-card">
+            <div class="financial-card__label">Food Cost</div>
+            <div class="financial-card__value">{{formatPercent financials.foodCostPercent}}</div>
+          </div>
+          <div class="financial-card">
+            <div class="financial-card__label">Labor Cost</div>
+            <div class="financial-card__value">{{formatPercent financials.laborCostPercent}}</div>
+          </div>
+          <div class="financial-card">
+            <div class="financial-card__label">Avg Ticket</div>
+            <div class="financial-card__value">{{formatCurrency financials.avgTicket}}</div>
+          </div>
+          <div class="financial-card">
+            <div class="financial-card__label">Covers / Day</div>
+            <div class="financial-card__value">{{financials.coversPerDay}}</div>
+          </div>
+          <div class="financial-card">
+            <div class="financial-card__label">SPLH</div>
+            <div class="financial-card__value">{{formatCurrency financials.splh}}</div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="costBreakdownChart"></canvas>
+        </div>
+
+        <p class="disclaimer">* Estimated data based on public sources and industry benchmarks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. OPPORTUNITIES ==================== -->
+  <section class="section" id="opportunities">
+    <div class="container">
+      <div class="section-label fade-up">Opportunities Identified</div>
+      <h2 class="section-title fade-up">Where You Can Improve</h2>
+      <p class="section-subtitle fade-up" style="margin-bottom: 32px;">
+        Based on our analysis of your online presence, reviews, and operations.
+      </p>
+
+      {{#each painPoints}}
+      <div class="pain-card fade-up">
+        <div class="pain-card__severity">
+          <span class="dot dot--{{severity}}"></span>
+        </div>
+        <div>
+          <div class="pain-card__title">{{title}}</div>
+          <div class="pain-card__desc">{{description}}</div>
+        </div>
+      </div>
+      {{/each}}
+
+      {{#if reviewInsights}}
+      <div style="margin-top: 32px;">
+        <div class="section-label fade-up">Review Insights</div>
+        {{#each reviewInsights}}
+        <div class="review-insight fade-up">
+          "{{quote}}"
+          <div class="review-insight__source">&#8212; {{source}}</div>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+    </div>
+  </section>
+
+  <!-- ==================== 5-7. PRODUCT PREVIEWS ==================== -->
+  {{#each products}}
+  <section class="product-section" id="product-{{@index}}">
+    <div class="container">
+      <div class="product-card fade-up" style="--product-color: {{product.color}};">
+        <div class="product-card__header">
+          <div class="product-card__icon">{{{product.icon}}}</div>
+          <div>
+            <div class="product-card__name">{{product.name}}</div>
+            <div class="product-card__tagline">{{product.tagline}}</div>
+          </div>
+        </div>
+
+        <div class="product-card__pitch">
+          {{personalizedPitch}}
+        </div>
+
+        <ul class="product-card__benefits">
+          {{#each benefits}}
+          <li>{{this}}</li>
+          {{/each}}
+        </ul>
+
+        <div class="product-card__footer">
+          <div class="product-card__roi">
+            Estimated ROI: <strong>{{estimatedROI}}</strong>
+          </div>
+          <div class="score-match">
+            <div class="score-match__bar">
+              <div class="score-match__fill" style="width: {{score}}%;"></div>
+            </div>
+            <span class="score-match__label">{{score}}% match</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {{/each}}
+
+  <!-- ==================== 8. TOTAL ROI SUMMARY ==================== -->
+  <section class="roi-section section" id="roi">
+    <div class="container">
+      <div class="section-label fade-up">Total Impact</div>
+      <h2 class="section-title fade-up">What WwithAI Could Save You</h2>
+
+      <div class="roi-section__total fade-up">
+        {{formatCurrency totalROI.totalAnnualSavings}}
+      </div>
+      <p class="roi-section__per-year fade-up">estimated annual savings</p>
+
+      <div class="roi-breakdown fade-up">
+        {{#each totalROI.breakdown}}
+        <div class="roi-breakdown__item">
+          <div class="roi-breakdown__product">{{productName}}</div>
+          <div class="roi-breakdown__value">{{formatCurrency annualSaving}}</div>
+        </div>
+        {{/each}}
+      </div>
+
+      <div class="roi-chart-container fade-up">
+        <canvas id="roiComparisonChart"></canvas>
+      </div>
+
+      <div class="fade-up">
+        <span class="payback-badge">
+          &#9889; Payback in {{totalROI.paybackMonths}} months
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 9. CTA ==================== -->
+  <section class="cta-section">
+    <h2 class="cta-section__heading">
+      Ready to save {{formatCurrency totalROI.totalAnnualSavings}}/year?
+    </h2>
+    <a class="cta-btn" href="{{calendlyUrl}}" target="_blank" rel="noopener noreferrer">
+      Book a Call
+    </a>
+    <p class="cta-email">
+      Or email us at <a href="mailto:contact@wwithai.com">contact@wwithai.com</a>
+    </p>
+  </section>
+
+  <!-- ==================== 10. FOOTER ==================== -->
+  <footer class="footer">
+    <div class="footer__brand">Wwith<span style="color: var(--accent-primary-light)">AI</span></div>
+    <p>Powered by WwithAI &mdash; AI-driven restaurant intelligence</p>
+    <p style="margin-top: 6px;">Generated on {{generatedDate}}</p>
+  </footer>
+
+  <!-- ==================== CHART.JS & SCRIPTS ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script>
+    // ---- Data from Handlebars ----
+    var financials = {{{json financials}}};
+    var totalROI = {{{json totalROI}}};
+
+    // ---- Chart Defaults ----
+    Chart.defaults.color = '#a1a7bf';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.plugins.legend.labels.padding = 16;
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+
+    // ---- 1. Cost Breakdown Pie Chart ----
+    (function () {
+      var ctx = document.getElementById('costBreakdownChart');
+      if (!ctx) return;
+
+      var food = financials.foodCostPercent || 0;
+      var labor = financials.laborCostPercent || 0;
+      var rent = financials.rentCostPercent || 10;
+      var other = financials.otherCostPercent || 10;
+      var profit = Math.max(0, 100 - food - labor - rent - other);
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Food Cost', 'Labor Cost', 'Rent', 'Other', 'Profit'],
+          datasets: [{
+            data: [food, labor, rent, other, profit],
+            backgroundColor: [
+              '#ef4444',
+              '#f59e0b',
+              '#8b5cf6',
+              '#6b7194',
+              '#22c55e'
+            ],
+            borderColor: '#1a1f2e',
+            borderWidth: 3,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 18,
+                font: { size: 12, weight: '500' }
+              }
+            },
+            tooltip: {
+              backgroundColor: '#1a1f2e',
+              titleColor: '#fff',
+              bodyColor: '#a1a7bf',
+              borderColor: 'rgba(255,255,255,0.08)',
+              borderWidth: 1,
+              cornerRadius: 8,
+              padding: 12,
+              callbacks: {
+                label: function (context) {
+                  return ' ' + context.label + ': ' + context.parsed + '%';
+                }
+              }
+            }
+          }
+        }
+      });
+    })();
+
+    // ---- 2. ROI Before/After Bar Chart ----
+    (function () {
+      var ctx = document.getElementById('roiComparisonChart');
+      if (!ctx) return;
+
+      var currentCosts = totalROI.currentAnnualCosts || 0;
+      var withWwithAI = totalROI.projectedAnnualCosts || (currentCosts - (totalROI.totalAnnualSavings || 0));
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Current Costs', 'With WwithAI'],
+          datasets: [{
+            label: 'Annual Operating Costs',
+            data: [currentCosts, withWwithAI],
+            backgroundColor: [
+              'rgba(239, 68, 68, 0.7)',
+              'rgba(34, 197, 94, 0.7)'
+            ],
+            borderColor: [
+              '#ef4444',
+              '#22c55e'
+            ],
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+            barPercentage: 0.5
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(255,255,255,0.04)',
+                drawBorder: false
+              },
+              ticks: {
+                callback: function (value) {
+                  if (value >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
+                  if (value >= 1000) return '$' + (value / 1000).toFixed(0) + 'K';
+                  return '$' + value;
+                },
+                font: { size: 11 }
+              }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 13, weight: '600' } }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1a1f2e',
+              titleColor: '#fff',
+              bodyColor: '#a1a7bf',
+              borderColor: 'rgba(255,255,255,0.08)',
+              borderWidth: 1,
+              cornerRadius: 8,
+              padding: 12,
+              callbacks: {
+                label: function (context) {
+                  var val = context.parsed.y;
+                  return ' $' + val.toLocaleString();
+                }
+              }
+            }
+          }
+        }
+      });
+    })();
+
+    // ---- Scroll Animations ----
+    (function () {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('.fade-up').forEach(function (el) {
+        observer.observe(el);
+      });
+    })();
+
+    // ---- Animated Counters on Scroll ----
+    (function () {
+      var counters = document.querySelectorAll('.counter[data-target]');
+      if (!counters.length) return;
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var el = entry.target;
+          var target = parseInt(el.getAttribute('data-target'), 10);
+          if (isNaN(target)) return;
+
+          var duration = 1800;
+          var start = 0;
+          var startTime = null;
+
+          function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+          function animate(timestamp) {
+            if (!startTime) startTime = timestamp;
+            var progress = Math.min((timestamp - startTime) / duration, 1);
+            var current = Math.floor(easeOut(progress) * target);
+            el.textContent = current.toLocaleString();
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              el.textContent = target.toLocaleString();
+            }
+          }
+
+          requestAnimationFrame(animate);
+          observer.unobserve(el);
+        });
+      }, { threshold: 0.5 });
+
+      counters.forEach(function (el) { observer.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>
